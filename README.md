@@ -60,6 +60,18 @@ Build the production bundle with:
 npm run build
 ```
 
+Run the test suite with:
+
+```bash
+npm run test
+```
+
+Run tests in watch mode while developing:
+
+```bash
+npm run test:watch
+```
+
 The app uses browser `localStorage` for the people list and keeps uploaded image files in memory
 only.
 
