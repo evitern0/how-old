@@ -18,9 +18,9 @@
 
 **Purpose**: Project initialization and baseline frontend structure
 
-- [ ] T001 Create the frontend application scaffold and entry files in package.json, index.html, and src/main.jsx
-- [ ] T002 Create the root React app shell and base layout in src/App.jsx and src/styles/global.css
-- [ ] T003 Add the application dependency list for React and ExifReader in package.json
+- [x] T001 Create the frontend application scaffold and entry files in package.json, index.html, and src/main.jsx
+- [x] T002 Create the root React app shell and base layout in src/App.jsx and src/styles/global.css
+- [x] T003 Add the application dependency list for React and ExifReader in package.json
 
 ---
 
@@ -30,11 +30,11 @@
 
 **⚠️ CRITICAL**: No user story work should begin until this phase is complete
 
-- [ ] T004 [P] Create the person data model and validation helpers in src/lib/validation/peopleValidation.js
-- [ ] T005 [P] Create calendar-aware age calculation utilities in src/lib/age/calculateAge.js and src/lib/age/dateMath.js
-- [ ] T006 [P] Create browser metadata extraction helpers for capture-date parsing in src/lib/metadata/extractCaptureDate.js
-- [ ] T007 [P] Create browser localStorage persistence helpers for the people list in src/state/localStorage.js
-- [ ] T008 Create shared session-state helpers for people, photo, results, and errors in src/state/photoSession.js
+- [x] T004 [P] Create the person data model and validation helpers in src/lib/validation/peopleValidation.js
+- [x] T005 [P] Create calendar-aware age calculation utilities in src/lib/age/calculateAge.js and src/lib/age/dateMath.js
+- [x] T006 [P] Create browser metadata extraction helpers for capture-date parsing in src/lib/metadata/extractCaptureDate.js
+- [x] T007 [P] Create browser localStorage persistence helpers for the people list in src/state/localStorage.js
+- [x] T008 Create shared session-state helpers for people, photo, results, and errors in src/state/photoSession.js
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -48,11 +48,11 @@
 
 ### Implementation for User Story 1
 
-- [ ] T009 [P] [US1] Build the people entry and editing interface in src/components/PeopleForm.jsx
-- [ ] T010 [P] [US1] Build the photo upload and capture-date status interface in src/components/PhotoUpload.jsx
-- [ ] T011 [P] [US1] Build the age results list and photo date summary in src/components/AgeResults.jsx
-- [ ] T012 [US1] Wire the app shell, people input, upload flow, and results rendering together in src/App.jsx
-- [ ] T013 [US1] Add session orchestration for applying the selected photo date to every entered person in src/state/photoSession.js
+- [x] T009 [P] [US1] Build the people entry and editing interface in src/components/PeopleForm.jsx
+- [x] T010 [P] [US1] Build the photo upload and capture-date status interface in src/components/PhotoUpload.jsx
+- [x] T011 [P] [US1] Build the age results list and photo date summary in src/components/AgeResults.jsx
+- [x] T012 [US1] Wire the app shell, people input, upload flow, and results rendering together in src/App.jsx
+- [x] T013 [US1] Add session orchestration for applying the selected photo date to every entered person in src/state/photoSession.js
 
 **Checkpoint**: User Story 1 should now be fully functional and independently demonstrable
 
@@ -66,9 +66,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Add unsupported-file and unreadable-metadata error messaging in src/components/PhotoUpload.jsx
-- [ ] T015 [US2] Update metadata parsing flow to surface a failure state instead of a manual-date fallback in src/lib/metadata/extractCaptureDate.js
-- [ ] T016 [US2] Preserve valid people entries while showing file-replacement guidance in src/App.jsx
+- [x] T014 [P] [US2] Add unsupported-file and unreadable-metadata error messaging in src/components/PhotoUpload.jsx
+- [x] T015 [US2] Update metadata parsing flow to surface a failure state instead of a manual-date fallback in src/lib/metadata/extractCaptureDate.js
+- [x] T016 [US2] Preserve valid people entries while showing file-replacement guidance in src/App.jsx
 
 **Checkpoint**: User Story 2 should now be fully functional and independently demonstrable
 
@@ -82,9 +82,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T017 [P] [US3] Persist and restore the people list through browser localStorage in src/state/localStorage.js and src/App.jsx
-- [ ] T018 [P] [US3] Add clear/reset controls for people data, current photo state, and results in src/components/SessionActions.jsx
-- [ ] T019 [US3] Ensure edits to the people list and new photo uploads replace stale results in src/state/photoSession.js
+- [x] T017 [P] [US3] Persist and restore the people list through browser localStorage in src/state/localStorage.js and src/App.jsx
+- [x] T018 [P] [US3] Add clear/reset controls for people data, current photo state, and results in src/components/SessionActions.jsx
+- [x] T019 [US3] Ensure edits to the people list and new photo uploads replace stale results in src/state/photoSession.js
 
 **Checkpoint**: User Stories 1, 2, and 3 should now all work independently
 
@@ -94,9 +94,9 @@
 
 **Purpose**: Final refinements that affect multiple stories
 
-- [ ] T020 [P] Improve responsive layout, spacing, and visual polish in src/styles/global.css
-- [ ] T021 [P] Add a browser-support and privacy note to specs/001-calculate-photo-ages/quickstart.md
-- [ ] T022 [P] Verify the project structure and documentation align with the implemented frontend-only architecture in specs/001-calculate-photo-ages/plan.md
+- [x] T020 [P] Improve responsive layout, spacing, and visual polish in src/styles/global.css
+- [x] T021 [P] Add a browser-support and privacy note to specs/001-calculate-photo-ages/quickstart.md
+- [x] T022 [P] Verify the project structure and documentation align with the implemented frontend-only architecture in specs/001-calculate-photo-ages/plan.md
 
 ---
 

@@ -11,6 +11,12 @@ Validate the privacy-first browser flow end to end: enter people, upload a photo
 - The app should be served from `http://` or `https://`, not opened directly from `file://`.
 - At least one test photo with a readable capture date in metadata.
 
+## Browser Notes
+
+- The app is intended for modern desktop and mobile browsers that support `File`, `DataView`, and `localStorage`.
+- The people list is stored locally in the browser; uploaded image files are not persisted after parsing.
+- Some rare metadata formats can depend on browser decompression support, so supported phone photos are the safest test cases.
+
 ## Validation Scenarios
 
 1. Enter one to five people with valid names and birth dates, then upload a supported photo.

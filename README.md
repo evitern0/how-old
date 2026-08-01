@@ -22,7 +22,8 @@ This project is designed to keep user data local:
 
 ## Project status
 
-The specification and implementation planning artifacts are complete. The app itself has not been implemented yet.
+The React app is implemented and runs entirely in the browser. The repository also includes the full
+specification, planning notes, and task breakdown for the feature.
 
 ## Documentation
 
@@ -48,7 +49,19 @@ The specification and implementation planning artifacts are complete. The app it
 
 ## Getting started
 
-The repository currently contains planning artifacts only. When the app is implemented, this section should include setup and local development instructions.
+```bash
+npm install
+npm run dev
+```
+
+Build the production bundle with:
+
+```bash
+npm run build
+```
+
+The app uses browser `localStorage` for the people list and keeps uploaded image files in memory
+only.
 
 ## License
 
