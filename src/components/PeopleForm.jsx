@@ -50,6 +50,7 @@ export default function PeopleForm({
                 <div className="field">
                   <label htmlFor={`dob-${person.id}`}>Date of birth</label>
                   <input
+                    className="field__date-input"
                     id={`dob-${person.id}`}
                     type="date"
                     value={person.dateOfBirth}
