@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "exifreader": "^4.33.0",
