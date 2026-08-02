@@ -1,12 +1,12 @@
 <!--
 Sync Impact Report
-- Version change: template -> 1.0.0
+- Version change: 1.0.0 -> 1.1.0
 - Modified principles:
 	- Template Principle 1 -> I. Local-First Privacy
 	- Template Principle 2 -> II. Metadata Truth and Transparency
 	- Template Principle 3 -> III. Deterministic Age Computation (NON-NEGOTIABLE)
 	- Template Principle 4 -> IV. Inclusive and Failure-Resilient Experience
-	- Template Principle 5 -> V. Testability and Browser Compatibility
+	- Template Principle 5 -> V. Testability and Browser Compatibility (expanded mandatory testing scope)
 - Added sections:
 	- Domain Constraints and Data Handling
 	- Delivery Workflow and Quality Gates
@@ -56,8 +56,9 @@ world use.
 ### V. Testability and Browser Compatibility
 Business logic for metadata extraction normalization and age calculation MUST be isolated from UI
 concerns and covered by automated tests. Any change affecting date parsing, timezone handling, or
-output formatting MUST include regression tests. The project MUST define and maintain a supported
-browser matrix.
+output formatting MUST include regression tests. All code changes, including both new features and
+bug fixes, MUST include automated test coverage that verifies the changed behavior before merge. The
+project MUST define and maintain a supported browser matrix.
 
 Rationale: Date and metadata logic regresses easily; separation and regression tests keep behavior
 stable.
@@ -78,6 +79,8 @@ stable.
 
 - Every behavior change MUST be documented in the associated spec, including acceptance criteria
 	for metadata fallback and age output.
+- Every code change, including bug fixes, MUST add or update automated tests that fail before the
+	change and pass after the change.
 - Pull requests MUST include: test evidence, risk notes for date/time handling, and screenshots or
 	recordings for key UI states (valid metadata, missing metadata, invalid upload).
 - Reviewers MUST block merges when principles in this constitution are violated.
@@ -97,4 +100,4 @@ This constitution is authoritative for product and engineering decisions in this
 	compliance check. Periodic audits SHOULD be run at least once per release cycle to verify
 	continued adherence and identify needed amendments.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-01 | **Last Amended**: 2026-08-01
+**Version**: 1.1.0 | **Ratified**: 2026-08-01 | **Last Amended**: 2026-08-01
