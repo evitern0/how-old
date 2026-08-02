@@ -216,11 +216,16 @@ button:disabled {
 .field input[type='date'],
 .upload-input {
   width: 100%;
+  max-width: 100%;
   padding: 0.9rem 0.95rem;
   border: 1px solid rgba(148, 163, 184, 0.22);
   border-radius: 14px;
   background: var(--input);
   color: var(--text);
+}
+
+.field input[type='date'] {
+  min-width: 0;
 }
 
 .field input::placeholder {
