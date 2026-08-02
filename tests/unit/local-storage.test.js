@@ -1,6 +1,7 @@
 import {
   clearPeopleFromStorage,
   loadPeopleFromStorage,
+  loadPeopleOrDefault,
   savePeopleToStorage,
 } from '../../src/state/localStorage.js';
 
@@ -33,5 +34,11 @@ describe('localStorage people persistence', () => {
   it('returns empty list for malformed JSON', () => {
     window.localStorage.setItem(STORAGE_KEY, '{bad json');
     expect(loadPeopleFromStorage()).toEqual([]);
+  });
+
+  it('restores default person when nothing is stored', () => {
+    const defaultPerson = { id: 'new', name: '', dateOfBirth: '' };
+    const loaded = loadPeopleOrDefault(() => defaultPerson);
+    expect(loaded).toEqual([defaultPerson]);
   });
 });
