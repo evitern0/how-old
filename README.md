@@ -72,6 +72,12 @@ Run tests in watch mode while developing:
 npm run test:watch
 ```
 
+Deploy to GitHub Pages:
+
+```bash
+npm run deploy
+```
+
 The app uses browser `localStorage` for the people list and keeps uploaded image files in memory
 only.
 
