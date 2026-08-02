@@ -8,6 +8,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Add this block to grant write permissions to the runner
+    permissions:
+      contents: write       # Required to push commits, tags, and code changes
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
