@@ -34,6 +34,20 @@ describe('extractCaptureDate', () => {
     expect(result.capturedAt).toBe('2023-12-01');
   });
 
+  it('falls back to CreateDate and reports the source tag used', async () => {
+    ExifReader.load.mockResolvedValueOnce({
+      exif: {
+        DateTimeOriginal: { description: 'not-a-date' },
+        CreateDate: { description: '2024:01:31 08:30:00' },
+      },
+    });
+
+    const result = await extractCaptureDate(file);
+    expect(result.status).toBe('parsed');
+    expect(result.capturedAt).toBe('2024-01-31');
+    expect(result.sourceTag).toBe('CreateDate');
+  });
+
   it('returns missing metadata when no date fields are parseable', async () => {
     ExifReader.load.mockResolvedValueOnce({
       exif: {

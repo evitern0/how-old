@@ -4,3 +4,11 @@ node_modules/
 dist/
 .npm-cache/
 coverage/
+build/
+*.log
+.env*
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.idea/

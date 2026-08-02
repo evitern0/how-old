@@ -103,3 +103,11 @@ tests/
 ## Complexity Tracking
 
 No constitutional violations require justification.
+
+## Constitution Compliance Notes (Implementation)
+
+- Local-first privacy preserved: people data remains in localStorage only, and uploaded photo data remains in-memory.
+- Metadata truth preserved: on metadata failure, flow stays on Upload and requires another image (no manual date fallback).
+- Deterministic age computation preserved: age/date math modules were not modified.
+- Failure resilience improved: explicit back/return navigation allows correction without losing valid people data.
+- Testability maintained: integration and unit tests were expanded for new screen flow and regressions.

@@ -6,6 +6,12 @@ export default function AgeResults({ results, photoState }) {
         Each age is shown as years, months, and days at the detected photo date.
       </p>
 
+      {photoState.status === 'parsed' && photoState.previewUrl ? (
+        <figure className="result-photo-preview">
+          <img src={photoState.previewUrl} alt="Uploaded photo preview" />
+        </figure>
+      ) : null}
+
       {photoState.status !== 'parsed' ? (
         <div className="empty-state">
           <strong>No photo date yet</strong>

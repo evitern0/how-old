@@ -2,6 +2,12 @@
 
 How Old is a privacy-first browser app that helps you find how old one to five people were when a photo was taken. You enter names and dates of birth, upload an image from your device, and the app reads the image metadata locally in the browser to determine the capture date and calculate each person’s age in years, months, and days.
 
+The workflow is intentionally split into three screens:
+
+1. People screen: Enter people names and dates of birth, then continue.
+2. Image Upload screen: Upload a photo and extract its capture date, or go back to People.
+3. Results screen: View each person's age at photo time with a small photo thumbnail, then return to Upload or People.
+
 ## What it does
 
 - Accepts between one and five people per session.
@@ -9,6 +15,7 @@ How Old is a privacy-first browser app that helps you find how old one to five p
 - Parses uploaded image metadata in the browser with ExifReader.
 - Displays the photo date and each person’s age at that moment.
 - Lets you upload another image or edit the people list without restarting.
+- Includes explicit Back/Continue controls between screens and a People reset action.
 - Shows a helpful error and asks for a different image file if the upload is invalid or metadata cannot be read.
 
 ## Privacy model

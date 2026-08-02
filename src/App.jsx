@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import AgeResults from './components/AgeResults.jsx';
-import PeopleForm from './components/PeopleForm.jsx';
-import PhotoUpload from './components/PhotoUpload.jsx';
-import SessionActions from './components/SessionActions.jsx';
+import PeopleScreen from './components/PeopleScreen.jsx';
+import ResultsScreen from './components/ResultsScreen.jsx';
+import UploadScreen from './components/UploadScreen.jsx';
 import { extractCaptureDate } from './lib/metadata/extractCaptureDate.js';
 import {
   createBlankPerson,
@@ -13,27 +12,29 @@ import {
 } from './lib/validation/peopleValidation.js';
 import {
   clearPeopleFromStorage,
-  loadPeopleFromStorage,
+  loadPeopleOrDefault,
   savePeopleToStorage,
 } from './state/localStorage.js';
 import {
   applyUploadResult,
+  canContinueToUpload,
+  createInitialWorkflowState,
   createLoadingPhotoState,
+  createPreviewUrl,
   createInitialPhotoState,
+  FLOW_SCREENS,
   recalculateSessionResults,
+  resetPhotoState,
+  revokePreviewUrl,
 } from './state/photoSession.js';
 
 function createInitialPeople() {
-  const storedPeople = loadPeopleFromStorage();
-  if (storedPeople.length > 0) {
-    return storedPeople;
-  }
-
-  return [createBlankPerson()];
+  return loadPeopleOrDefault(createBlankPerson);
 }
 
 export default function App() {
   const [people, setPeople] = useState(() => createInitialPeople());
+  const [currentScreen, setCurrentScreen] = useState(() => createInitialWorkflowState());
   const [photoState, setPhotoState] = useState(() => createInitialPhotoState());
   const [results, setResults] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
@@ -54,6 +55,13 @@ export default function App() {
 
     setResults(recalculateSessionResults(people, photoState));
   }, [people, photoState]);
+
+  useEffect(
+    () => () => {
+      revokePreviewUrl(photoState.previewUrl);
+    },
+    [photoState.previewUrl],
+  );
 
   const handleAddPerson = () => {
     setPeople((currentPeople) => {
@@ -83,30 +91,54 @@ export default function App() {
       return;
     }
 
-    setPhotoState(createLoadingPhotoState());
+    setPhotoState((currentPhotoState) => {
+      revokePreviewUrl(currentPhotoState.previewUrl);
+      return createLoadingPhotoState();
+    });
 
     try {
       const uploadResult = await extractCaptureDate(file);
-      const nextState = applyUploadResult(uploadResult);
+      const previewUrl = uploadResult.status === 'parsed' ? createPreviewUrl(file) : '';
+      const nextState = applyUploadResult(uploadResult, previewUrl);
       setPhotoState(nextState.photo);
       setResults(nextState.results);
+
+      if (uploadResult.status === 'parsed') {
+        setCurrentScreen(FLOW_SCREENS.RESULTS);
+      }
     } finally {
       setFileInputKey((currentKey) => currentKey + 1);
     }
   };
 
-  const handleClearSession = () => {
+  const handleResetPeople = () => {
     clearPeopleFromStorage();
     setPeople([createBlankPerson()]);
-    setPhotoState(createInitialPhotoState());
+    setPhotoState((currentPhotoState) => resetPhotoState(currentPhotoState));
     setResults([]);
+    setCurrentScreen(FLOW_SCREENS.PEOPLE);
     setFileInputKey((currentKey) => currentKey + 1);
   };
 
-  const hasValidPeople = validation.isValid;
-  const readyMessage = hasValidPeople
-    ? 'Ready to read a photo date.'
-    : 'Finish the people list before uploading a photo.';
+  const handleContinueToUpload = () => {
+    if (!canContinueToUpload(validation)) {
+      return;
+    }
+
+    setCurrentScreen(FLOW_SCREENS.UPLOAD);
+  };
+
+  const handleBackToPeople = () => {
+    setCurrentScreen(FLOW_SCREENS.PEOPLE);
+  };
+
+  const handleReturnToUpload = () => {
+    setCurrentScreen(FLOW_SCREENS.UPLOAD);
+  };
+
+  const showPeopleScreen = currentScreen === FLOW_SCREENS.PEOPLE;
+  const showUploadScreen = currentScreen === FLOW_SCREENS.UPLOAD;
+  const showResultsScreen = currentScreen === FLOW_SCREENS.RESULTS;
 
   return (
     <div className="app-shell">
@@ -126,36 +158,37 @@ export default function App() {
         </div>
       </header>
 
-      <main className="layout">
-        <div className="stack">
-          <PeopleForm
+      <main className="screen-shell">
+        {showPeopleScreen ? (
+          <PeopleScreen
             people={people}
             validation={validation}
             onAddPerson={handleAddPerson}
             onUpdatePerson={handleUpdatePerson}
             onRemovePerson={handleRemovePerson}
+            onContinue={handleContinueToUpload}
+            onReset={handleResetPeople}
           />
-          <PhotoUpload fileInputKey={fileInputKey} photoState={photoState} onUpload={handleUpload} />
-        </div>
+        ) : null}
 
-        <div className="stack">
-          <AgeResults results={results} photoState={photoState} />
-          <SessionActions onClearSession={handleClearSession} />
-          <section className="card">
-            <h2>Status</h2>
-            <p className="card__subtitle">{readyMessage}</p>
-            <p className="help-text">
-              The people list persists in this browser. Uploaded images and derived metadata are not
-              stored after parsing.
-            </p>
-          </section>
-        </div>
+        {showUploadScreen ? (
+          <UploadScreen
+            fileInputKey={fileInputKey}
+            photoState={photoState}
+            onUpload={handleUpload}
+            onBack={handleBackToPeople}
+          />
+        ) : null}
+
+        {showResultsScreen ? (
+          <ResultsScreen
+            results={results}
+            photoState={photoState}
+            onReturnToUpload={handleReturnToUpload}
+            onReturnToPeople={handleBackToPeople}
+          />
+        ) : null}
       </main>
-
-      <p className="footer-note">
-        If the photo does not expose a readable capture date or the file is not a valid image, the app
-        will ask you to choose a different image file.
-      </p>
     </div>
   );
 }

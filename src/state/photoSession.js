@@ -1,12 +1,31 @@
 import { calculateAgeBetween, formatAgeParts, formatPhotoDate } from '../lib/age/calculateAge.js';
 import { validatePeopleList } from '../lib/validation/peopleValidation.js';
 
+export const FLOW_SCREENS = Object.freeze({
+  PEOPLE: 'people',
+  UPLOAD: 'upload',
+  RESULTS: 'results',
+});
+
+export function createInitialWorkflowState() {
+  return FLOW_SCREENS.PEOPLE;
+}
+
+export function canContinueToUpload(validation) {
+  return Boolean(validation?.isValid);
+}
+
+export function canShowResults(photoState) {
+  return Boolean(photoState?.status === 'parsed' && photoState?.capturedAt);
+}
+
 export function createInitialPhotoState() {
   return {
     fileName: '',
     mimeType: '',
     capturedAt: '',
     sourceTag: '',
+    previewUrl: '',
     status: 'idle',
     message: '',
   };
@@ -18,9 +37,31 @@ export function createLoadingPhotoState() {
     mimeType: '',
     capturedAt: '',
     sourceTag: '',
+    previewUrl: '',
     status: 'loading',
     message: 'Reading image metadata...',
   };
+}
+
+export function createPreviewUrl(file) {
+  if (!file || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
+    return '';
+  }
+
+  return URL.createObjectURL(file);
+}
+
+export function revokePreviewUrl(previewUrl) {
+  if (!previewUrl || typeof URL === 'undefined' || typeof URL.revokeObjectURL !== 'function') {
+    return;
+  }
+
+  URL.revokeObjectURL(previewUrl);
+}
+
+export function resetPhotoState(currentPhotoState) {
+  revokePreviewUrl(currentPhotoState?.previewUrl);
+  return createInitialPhotoState();
 }
 
 export function createInitialSessionResults() {
@@ -44,7 +85,7 @@ export function buildAgeResults(people, photoDate) {
   });
 }
 
-export function applyUploadResult(metadataResult) {
+export function applyUploadResult(metadataResult, previewUrl = '') {
   if (!metadataResult || metadataResult.status !== 'parsed') {
     return {
       photo: {
@@ -52,6 +93,7 @@ export function applyUploadResult(metadataResult) {
         mimeType: metadataResult?.mimeType ?? '',
         capturedAt: '',
         sourceTag: '',
+        previewUrl: '',
         status: metadataResult?.status ?? 'unsupported',
         message: metadataResult?.message ?? 'Choose a different image file.',
       },
@@ -65,6 +107,7 @@ export function applyUploadResult(metadataResult) {
       mimeType: metadataResult.mimeType,
       capturedAt: metadataResult.capturedAt,
       sourceTag: metadataResult.sourceTag,
+      previewUrl,
       status: 'parsed',
       message: '',
     },

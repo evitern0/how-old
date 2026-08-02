@@ -24,6 +24,15 @@ export function loadPeopleFromStorage() {
   }
 }
 
+export function loadPeopleOrDefault(createDefaultPerson) {
+  const storedPeople = loadPeopleFromStorage();
+  if (storedPeople.length > 0) {
+    return storedPeople;
+  }
+
+  return [createDefaultPerson()];
+}
+
 export function savePeopleToStorage(people) {
   if (!canUseLocalStorage()) {
     return;

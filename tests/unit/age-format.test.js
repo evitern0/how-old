@@ -15,4 +15,12 @@ describe('age formatting', () => {
     const result = calculateAgeBetween('2016-02-29', '2024-03-01');
     expect(result).toEqual({ years: 8, months: 0, days: 1 });
   });
+
+  it('keeps canonical results used by integration flow assertions', () => {
+    const firstPhoto = calculateAgeBetween('2020-10-10', '2021-06-10');
+    const secondPhoto = calculateAgeBetween('2020-10-10', '2022-06-10');
+
+    expect(formatAgeParts(firstPhoto)).toBe('8 months');
+    expect(formatAgeParts(secondPhoto)).toBe('1 year, 8 months');
+  });
 });

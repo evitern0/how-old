@@ -18,9 +18,9 @@
 
 **Purpose**: Prepare shared flow and test scaffolding for the screen-based refactor
 
-- [ ] T001 Define screen-state constants and transition helper signatures in src/state/photoSession.js
-- [ ] T002 Add three-screen flow fixtures and upload-result test data helpers in tests/setup.js
-- [ ] T003 [P] Add shared screen container and button-group style tokens in src/styles/global.css
+- [X] T001 Define screen-state constants and transition helper signatures in src/state/photoSession.js
+- [X] T002 Add three-screen flow fixtures and upload-result test data helpers in tests/setup.js
+- [X] T003 [P] Add shared screen container and button-group style tokens in src/styles/global.css
 
 ---
 
@@ -30,11 +30,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Implement central workflow state machine (PEOPLE, UPLOAD, RESULTS) in src/App.jsx
-- [ ] T005 [P] Extend people session reset/restore helpers to support screen-based flow in src/state/localStorage.js
-- [ ] T006 [P] Add upload context helpers for preview URL lifecycle and cleanup in src/state/photoSession.js
-- [ ] T007 Wire flow-level callbacks and shared state plumbing across existing feature components in src/App.jsx
-- [ ] T008 Add foundational integration test harness for explicit screen transitions in tests/integration/app-flow.test.jsx
+- [X] T004 Implement central workflow state machine (PEOPLE, UPLOAD, RESULTS) in src/App.jsx
+- [X] T005 [P] Extend people session reset/restore helpers to support screen-based flow in src/state/localStorage.js
+- [X] T006 [P] Add upload context helpers for preview URL lifecycle and cleanup in src/state/photoSession.js
+- [X] T007 Wire flow-level callbacks and shared state plumbing across existing feature components in src/App.jsx
+- [X] T008 Add foundational integration test harness for explicit screen transitions in tests/integration/app-flow.test.jsx
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -48,19 +48,19 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add happy-path flow test (People -> Upload -> Results) in tests/integration/app-flow.test.jsx
-- [ ] T010 [P] [US1] Add unit assertions for unchanged age output formatting in tests/unit/age-format.test.js
-- [ ] T011 [P] [US1] Add upload-success metadata extraction assertions tied to flow transition in tests/unit/metadata-extract.test.js
+- [X] T009 [P] [US1] Add happy-path flow test (People -> Upload -> Results) in tests/integration/app-flow.test.jsx
+- [X] T010 [P] [US1] Add unit assertions for unchanged age output formatting in tests/unit/age-format.test.js
+- [X] T011 [P] [US1] Add upload-success metadata extraction assertions tied to flow transition in tests/unit/metadata-extract.test.js
 
 ### Implementation for User Story 1
 
-- [ ] T012 [P] [US1] Create People screen wrapper component with Continue and Reset actions in src/components/PeopleScreen.jsx
-- [ ] T013 [P] [US1] Create Upload screen wrapper component with upload content region and Back action placeholder in src/components/UploadScreen.jsx
-- [ ] T014 [P] [US1] Create Results screen wrapper component with thumbnail header and result action region in src/components/ResultsScreen.jsx
-- [ ] T015 [US1] Update people form rendering and validation gating for Continue enablement in src/components/PeopleForm.jsx
-- [ ] T016 [US1] Update photo upload success callback to trigger RESULTS transition in src/components/PhotoUpload.jsx
-- [ ] T017 [US1] Integrate PeopleScreen, UploadScreen, and ResultsScreen into screen-state renderer in src/App.jsx
-- [ ] T018 [US1] Render uploaded image thumbnail preview above age results in src/components/AgeResults.jsx
+- [X] T012 [P] [US1] Create People screen wrapper component with Continue and Reset actions in src/components/PeopleScreen.jsx
+- [X] T013 [P] [US1] Create Upload screen wrapper component with upload content region and Back action placeholder in src/components/UploadScreen.jsx
+- [X] T014 [P] [US1] Create Results screen wrapper component with thumbnail header and result action region in src/components/ResultsScreen.jsx
+- [X] T015 [US1] Update people form rendering and validation gating for Continue enablement in src/components/PeopleForm.jsx
+- [X] T016 [US1] Update photo upload success callback to trigger RESULTS transition in src/components/PhotoUpload.jsx
+- [X] T017 [US1] Integrate PeopleScreen, UploadScreen, and ResultsScreen into screen-state renderer in src/App.jsx
+- [X] T018 [US1] Render uploaded image thumbnail preview above age results in src/components/AgeResults.jsx
 
 **Checkpoint**: User Story 1 should now be functional and testable independently
 
@@ -74,16 +74,16 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Add upload-back-to-people preservation test in tests/integration/app-flow.test.jsx
-- [ ] T020 [P] [US2] Add results return-to-upload navigation test in tests/integration/app-flow.test.jsx
-- [ ] T021 [P] [US2] Add results return-to-people navigation test in tests/integration/app-flow.test.jsx
+- [X] T019 [P] [US2] Add upload-back-to-people preservation test in tests/integration/app-flow.test.jsx
+- [X] T020 [P] [US2] Add results return-to-upload navigation test in tests/integration/app-flow.test.jsx
+- [X] T021 [P] [US2] Add results return-to-people navigation test in tests/integration/app-flow.test.jsx
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Implement Upload screen Back control and handler wiring in src/components/UploadScreen.jsx
-- [ ] T023 [US2] Implement Results screen Return to Upload and Return to People controls in src/components/ResultsScreen.jsx
-- [ ] T024 [US2] Ensure navigation actions preserve people list and do not clear valid entries in src/App.jsx
-- [ ] T025 [US2] Refine cross-screen action labels/placement for mobile and desktop usability in src/styles/global.css
+- [X] T022 [US2] Implement Upload screen Back control and handler wiring in src/components/UploadScreen.jsx
+- [X] T023 [US2] Implement Results screen Return to Upload and Return to People controls in src/components/ResultsScreen.jsx
+- [X] T024 [US2] Ensure navigation actions preserve people list and do not clear valid entries in src/App.jsx
+- [X] T025 [US2] Refine cross-screen action labels/placement for mobile and desktop usability in src/styles/global.css
 
 **Checkpoint**: User Stories 1 and 2 should both work independently
 
@@ -97,16 +97,16 @@
 
 ### Tests for User Story 3
 
-- [ ] T026 [P] [US3] Add people-reset behavior test for clearing form/session state in tests/unit/people-form.test.jsx
-- [ ] T027 [P] [US3] Add results re-run upload refresh test in tests/integration/app-flow.test.jsx
-- [ ] T028 [P] [US3] Add localStorage persistence regression check across screen navigation in tests/unit/local-storage.test.js
+- [X] T026 [P] [US3] Add people-reset behavior test for clearing form/session state in tests/unit/people-form.test.jsx
+- [X] T027 [P] [US3] Add results re-run upload refresh test in tests/integration/app-flow.test.jsx
+- [X] T028 [P] [US3] Add localStorage persistence regression check across screen navigation in tests/unit/local-storage.test.js
 
 ### Implementation for User Story 3
 
-- [ ] T029 [US3] Implement People screen Reset action wiring to clear form and people session state in src/components/PeopleScreen.jsx
-- [ ] T030 [US3] Ensure reset flow clears persisted people and dependent result context in src/App.jsx
-- [ ] T031 [US3] Keep upload failure behavior on UPLOAD screen with actionable errors and no manual date fallback in src/components/PhotoUpload.jsx
-- [ ] T032 [US3] Ensure second successful upload from RESULTS path recomputes and replaces result set in src/App.jsx
+- [X] T029 [US3] Implement People screen Reset action wiring to clear form and people session state in src/components/PeopleScreen.jsx
+- [X] T030 [US3] Ensure reset flow clears persisted people and dependent result context in src/App.jsx
+- [X] T031 [US3] Keep upload failure behavior on UPLOAD screen with actionable errors and no manual date fallback in src/components/PhotoUpload.jsx
+- [X] T032 [US3] Ensure second successful upload from RESULTS path recomputes and replaces result set in src/App.jsx
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -116,10 +116,10 @@
 
 **Purpose**: Final quality, consistency, and release-readiness checks across stories
 
-- [ ] T033 [P] Update user-facing workflow documentation for three-screen navigation in README.md
-- [ ] T034 Validate quickstart scenarios and record any deviations in specs/002-declutter-screen-flow/quickstart.md
-- [ ] T035 Run full automated test suite and fix regressions in tests/integration/app-flow.test.jsx
-- [ ] T036 [P] Capture constitution compliance notes for privacy, metadata transparency, and determinism in specs/002-declutter-screen-flow/plan.md
+- [X] T033 [P] Update user-facing workflow documentation for three-screen navigation in README.md
+- [X] T034 Validate quickstart scenarios and record any deviations in specs/002-declutter-screen-flow/quickstart.md
+- [X] T035 Run full automated test suite and fix regressions in tests/integration/app-flow.test.jsx
+- [X] T036 [P] Capture constitution compliance notes for privacy, metadata transparency, and determinism in specs/002-declutter-screen-flow/plan.md
 
 ---
 
