@@ -655,6 +655,10 @@ button:disabled {
     gap: 4px;
   }
 
+  .results-list--timeline .result-item__age-block {
+    justify-items: start;
+  }
+
   .result-item__age {
     font-size: 0.9rem;
   }

@@ -1,4 +1,5 @@
 import { calculateAgeBetween, formatAgeParts } from '../../src/lib/age/calculateAge.js';
+import { buildAgeResults } from '../../src/state/photoSession.js';
 
 describe('age formatting', () => {
   it('omits zero units and keeps non-zero units', () => {
@@ -22,5 +23,23 @@ describe('age formatting', () => {
 
     expect(formatAgeParts(firstPhoto)).toBe('8 months');
     expect(formatAgeParts(secondPhoto)).toBe('1 year, 8 months');
+  });
+
+  it('adds a countdown label for people who are not yet born', () => {
+    const results = buildAgeResults(
+      [
+        {
+          id: 'person-1',
+          name: 'Mina',
+          dateOfBirth: '2025-07-20',
+          editing: false,
+          done: true,
+        },
+      ],
+      '2024-01-15',
+    );
+
+    expect(results[0].ageLabel).toBe('Not born yet');
+    expect(results[0].ageAuxLabel).toBe('🤰 1 year, 6 months, 5 days');
   });
 });

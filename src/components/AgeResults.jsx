@@ -41,6 +41,7 @@ export default function AgeResults({ results }) {
                 <ul className="results-list results-list--timeline">
                   {entry.ageResults.map((result) => {
                     const underTwoAge = formatUnderTwoMonths(result.ageParts);
+                    const secondaryLabel = result.ageAuxLabel ?? underTwoAge;
 
                     return (
                       <li className="result-item" key={`${entry.photoId}:${result.personId}`}>
@@ -48,7 +49,7 @@ export default function AgeResults({ results }) {
                           <strong>{result.name}</strong>
                           <div className="result-item__age-block">
                             <span className="result-item__age">{result.ageLabel}</span>
-                            {underTwoAge ? <span className="result-item__age-aux">{underTwoAge}</span> : null}
+                            {secondaryLabel ? <span className="result-item__age-aux">{secondaryLabel}</span> : null}
                           </div>
                         </div>
                       </li>

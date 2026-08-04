@@ -1,4 +1,4 @@
-import { calculateAgeBetween, formatAgeParts, formatPhotoDate } from '../lib/age/calculateAge.js';
+import { calculateAgeBetween, formatAgeParts, formatCountdownLabel, formatPhotoDate } from '../lib/age/calculateAge.js';
 import { validatePeopleList } from '../lib/validation/peopleValidation.js';
 
 export const FLOW_SCREENS = Object.freeze({
@@ -164,6 +164,8 @@ export function buildAgeResults(people, photoDate) {
 
   return validPeople.map((person) => {
     const ageParts = calculateAgeBetween(person.dateOfBirth, photoDate);
+    const ageLabel = formatAgeParts(ageParts);
+    const ageAuxLabel = ageParts ? null : formatCountdownLabel(person.dateOfBirth, photoDate);
 
     return {
       personId: person.id,
@@ -171,7 +173,8 @@ export function buildAgeResults(people, photoDate) {
       dateOfBirth: person.dateOfBirth,
       photoDate: formatPhotoDate(photoDate),
       ageParts,
-      ageLabel: formatAgeParts(ageParts),
+      ageLabel,
+      ageAuxLabel,
     };
   });
 }

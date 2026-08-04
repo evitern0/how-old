@@ -191,6 +191,7 @@ export default function App() {
     }
 
     setCurrentScreen(FLOW_SCREENS.RESULTS);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const showPeopleScreen = currentScreen === FLOW_SCREENS.PEOPLE;
