@@ -544,4 +544,8 @@ button:disabled {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .result-item__age {
+    font-size: 0.9rem;
+  }
 }
