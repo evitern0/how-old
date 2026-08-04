@@ -20,22 +20,23 @@ Open the local Vite URL and complete the flow below.
 
 1. Enter valid people on the first screen.
 2. Upload two or more image files, either one at a time or together.
-3. Confirm the upload screen shows thumbnails and file names for the accepted photos.
+3. Confirm the upload screen shows thumbnails, file names, and capture dates for the accepted photos.
 4. Remove one uploaded photo before continuing.
-5. Select Continue.
-6. Expected result: the results page opens only after Continue, and the timeline shows the remaining photos in oldest-to-newest capture-date order.
+5. Select Continue to results.
+6. Expected result: the results page opens only after Continue to results, and the timeline shows the remaining photos in oldest-to-newest capture-date order.
 
 ### 2) Verify partial batch handling
 
 1. Enter valid people.
 2. Upload a batch containing both valid images and at least one invalid file or image without a usable capture date.
-3. Expected result: valid photos remain in the queue, the invalid file(s) are identified in the UI, and the user stays on the upload screen.
+3. Expected result: valid photos remain in the queue, invalid file names and reasons are listed in the UI, and the user stays on the upload screen.
 
 ### 3) Verify chronological results layout
 
 1. Continue to the results page with multiple photos whose capture dates are far apart.
 2. Expected result: thumbnails appear in a vertical timeline with even spacing between entries, a dot aligned to each thumbnail, and ages shown to the right of each dot.
 3. Confirm the people are listed in the same order they were configured on the first screen.
+4. Select Back to upload and verify the same queued photos remain available for review or removal.
 
 ### 4) Verify compact presentation
 

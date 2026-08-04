@@ -19,9 +19,9 @@
 
 **Purpose**: Prepare test helpers and shared state primitives for the multi-photo queue workflow
 
-- [ ] T001 [P] Add multi-photo queue test helpers for queued uploads and removal in tests/setup.js
-- [ ] T002 [P] Add a reusable timeline fixture helper for ordered photo dates in tests/setup.js
-- [ ] T003 [P] Create initial upload-queue state helpers in src/state/photoSession.js for accumulated photos and explicit continue gating
+- [X] T001 [P] Add multi-photo queue test helpers for queued uploads and removal in tests/setup.js
+- [X] T002 [P] Add a reusable timeline fixture helper for ordered photo dates in tests/setup.js
+- [X] T003 [P] Create initial upload-queue state helpers in src/state/photoSession.js for accumulated photos and explicit continue gating
 
 ---
 
@@ -29,11 +29,11 @@
 
 **Purpose**: Core data and state handling that all user stories depend on
 
-- [ ] T004 [P] Extend src/state/photoSession.js with queued-photo state, stable sort helpers, and preview URL cleanup for removed photos
-- [ ] T005 [P] Add batch photo metadata handling in src/lib/metadata/extractCaptureDate.js call sites so one upload can yield multiple per-file results
-- [ ] T006 [P] Add upload-queue persistence and reset behavior boundaries in src/App.jsx without changing localStorage behavior for people
-- [ ] T007 [P] Update src/components/UploadScreen.jsx and src/components/PhotoUpload.jsx props to support queued thumbnails, file names, removal controls, and explicit Continue
-- [ ] T008 [P] Update src/components/ResultsScreen.jsx and src/components/AgeResults.jsx props to accept ordered timeline entries instead of a single photo state
+- [X] T004 [P] Extend src/state/photoSession.js with queued-photo state, stable sort helpers, and preview URL cleanup for removed photos
+- [X] T005 [P] Add batch photo metadata handling in src/lib/metadata/extractCaptureDate.js call sites so one upload can yield multiple per-file results
+- [X] T006 [P] Add upload-queue persistence and reset behavior boundaries in src/App.jsx without changing localStorage behavior for people
+- [X] T007 [P] Update src/components/UploadScreen.jsx and src/components/PhotoUpload.jsx props to support queued thumbnails, file names, removal controls, and explicit Continue
+- [X] T008 [P] Update src/components/ResultsScreen.jsx and src/components/AgeResults.jsx props to accept ordered timeline entries instead of a single photo state
 
 **Checkpoint**: Queueing, removal, and timeline data structures are ready for story-specific UI work
 
@@ -47,16 +47,16 @@
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Add integration coverage for accumulating multiple uploads, removing one queued photo, and preventing auto-navigation in tests/integration/app-flow.test.jsx
-- [ ] T010 [P] [US1] Add unit coverage for queue limit enforcement and stable removal behavior in tests/unit/photo-session.test.js
+- [X] T009 [P] [US1] Add integration coverage for accumulating multiple uploads, removing one queued photo, and preventing auto-navigation in tests/integration/app-flow.test.jsx
+- [X] T010 [P] [US1] Add unit coverage for queue limit enforcement and stable removal behavior in tests/unit/photo-session.test.js
 
 ### Implementation for User Story 1
 
-- [ ] T011 [P] [US1] Implement queued photo accumulation, per-file validation, and hard five-photo cap in src/App.jsx
-- [ ] T012 [P] [US1] Implement queue state helpers, stable ordering, and remove-one-photo behavior in src/state/photoSession.js
-- [ ] T013 [P] [US1] Render queued photo thumbnails and file names in src/components/PhotoUpload.jsx
-- [ ] T014 [P] [US1] Add remove controls for individual queued photos and explicit Continue gating in src/components/UploadScreen.jsx
-- [ ] T015 [US1] Prevent navigation to results until the user selects Continue in src/App.jsx
+- [X] T011 [P] [US1] Implement queued photo accumulation, per-file validation, and hard five-photo cap in src/App.jsx
+- [X] T012 [P] [US1] Implement queue state helpers, stable ordering, and remove-one-photo behavior in src/state/photoSession.js
+- [X] T013 [P] [US1] Render queued photo thumbnails and file names in src/components/PhotoUpload.jsx
+- [X] T014 [P] [US1] Add remove controls for individual queued photos and explicit Continue gating in src/components/UploadScreen.jsx
+- [X] T015 [US1] Prevent navigation to results until the user selects Continue in src/App.jsx
 
 **Checkpoint**: User Story 1 is independently usable with queued uploads, removal, and manual continue
 
@@ -70,15 +70,15 @@
 
 ### Tests for User Story 2
 
-- [ ] T016 [P] [US2] Add integration coverage for mixed-validity batches, invalid-file messaging, and continued queue preservation in tests/integration/app-flow.test.jsx
-- [ ] T017 [P] [US2] Add unit coverage for per-file validation summaries and metadata failure handling in tests/unit/photo-session.test.js
+- [X] T016 [P] [US2] Add integration coverage for mixed-validity batches, invalid-file messaging, and continued queue preservation in tests/integration/app-flow.test.jsx
+- [X] T017 [P] [US2] Add unit coverage for per-file validation summaries and metadata failure handling in tests/unit/photo-session.test.js
 
 ### Implementation for User Story 2
 
-- [ ] T018 [P] [US2] Aggregate per-file upload results and error messages in src/App.jsx so valid photos remain queued when some files fail
-- [ ] T019 [P] [US2] Extend src/state/photoSession.js to store file-level validation messages and preserve accepted files from mixed batches
-- [ ] T020 [US2] Surface invalid-file names and reasons in src/components/PhotoUpload.jsx without clearing previously accepted photos
-- [ ] T021 [US2] Keep the upload screen active after mixed batch failures and only allow progression when the user explicitly continues from a valid queue in src/components/UploadScreen.jsx
+- [X] T018 [P] [US2] Aggregate per-file upload results and error messages in src/App.jsx so valid photos remain queued when some files fail
+- [X] T019 [P] [US2] Extend src/state/photoSession.js to store file-level validation messages and preserve accepted files from mixed batches
+- [X] T020 [US2] Surface invalid-file names and reasons in src/components/PhotoUpload.jsx without clearing previously accepted photos
+- [X] T021 [US2] Keep the upload screen active after mixed batch failures and only allow progression when the user explicitly continues from a valid queue in src/components/UploadScreen.jsx
 
 **Checkpoint**: User Story 2 can stand alone with robust mixed-batch feedback and no loss of valid queued photos
 
@@ -92,17 +92,17 @@
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Add integration coverage for timeline ordering, stable same-date sorting, and configured-person order in tests/integration/app-flow.test.jsx
-- [ ] T023 [P] [US3] Add unit coverage for timeline sort order and age-result mapping in tests/unit/photo-session.test.js
-- [ ] T024 [P] [US3] Add layout regression coverage for the compact timeline presentation in tests/integration/app-flow.test.jsx or a dedicated viewport test file under tests/integration/
+- [X] T022 [P] [US3] Add integration coverage for timeline ordering, stable same-date sorting, and configured-person order in tests/integration/app-flow.test.jsx
+- [X] T023 [P] [US3] Add unit coverage for timeline sort order and age-result mapping in tests/unit/photo-session.test.js
+- [X] T024 [P] [US3] Add layout regression coverage for the compact timeline presentation in tests/integration/app-flow.test.jsx or a dedicated viewport test file under tests/integration/
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Build ordered timeline entry data from queued photos in src/state/photoSession.js
-- [ ] T026 [P] [US3] Render the vertical timeline structure, thumbnail column, and per-photo result groups in src/components/ResultsScreen.jsx
-- [ ] T027 [P] [US3] Update src/components/AgeResults.jsx to render multiple timeline entries while keeping people in configured order and omitting birth dates from the results view
-- [ ] T028 [P] [US3] Refresh the compact results layout and timeline styling in src/styles/global.css
-- [ ] T029 [US3] Preserve the back-to-people and back-to-upload navigation actions on the new results timeline in src/App.jsx and src/components/ResultsScreen.jsx
+- [X] T025 [P] [US3] Build ordered timeline entry data from queued photos in src/state/photoSession.js
+- [X] T026 [P] [US3] Render the vertical timeline structure, thumbnail column, and per-photo result groups in src/components/ResultsScreen.jsx
+- [X] T027 [P] [US3] Update src/components/AgeResults.jsx to render multiple timeline entries while keeping people in configured order and omitting birth dates from the results view
+- [X] T028 [P] [US3] Refresh the compact results layout and timeline styling in src/styles/global.css
+- [X] T029 [US3] Preserve the back-to-people and back-to-upload navigation actions on the new results timeline in src/App.jsx and src/components/ResultsScreen.jsx
 
 **Checkpoint**: User Story 3 fully replaces the old results layout with the requested vertical timeline
 
@@ -112,9 +112,9 @@
 
 **Purpose**: Final cleanup, documentation, and verification across all stories
 
-- [ ] T030 [P] Update quickstart validation notes in specs/003-photo-timeline-view/quickstart.md if any implementation details changed during delivery
-- [ ] T031 [P] Review and tighten UI copy for upload limits, removal behavior, and timeline ordering in src/components/PhotoUpload.jsx and src/components/ResultsScreen.jsx
-- [ ] T032 Run the full test suite and verify all photo timeline and layout regressions in tests/integration/ and tests/unit/
+- [X] T030 [P] Update quickstart validation notes in specs/003-photo-timeline-view/quickstart.md if any implementation details changed during delivery
+- [X] T031 [P] Review and tighten UI copy for upload limits, removal behavior, and timeline ordering in src/components/PhotoUpload.jsx and src/components/ResultsScreen.jsx
+- [X] T032 Run the full test suite and verify all photo timeline and layout regressions in tests/integration/ and tests/unit/
 
 ---
 

@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PeopleScreen from './components/PeopleScreen.jsx';
 import ResultsScreen from './components/ResultsScreen.jsx';
 import UploadScreen from './components/UploadScreen.jsx';
 import { extractCaptureDate } from './lib/metadata/extractCaptureDate.js';
+import { createPreviewUrl } from './lib/preview/createPreviewUrl.js';
 import {
   createBlankPerson,
   normalizePeople,
@@ -16,15 +17,16 @@ import {
   savePeopleToStorage,
 } from './state/localStorage.js';
 import {
-  applyUploadResult,
+  applyQueuedUploadResults,
+  canContinueToResults,
   canContinueToUpload,
+  buildTimelineEntries,
   createInitialWorkflowState,
   createLoadingPhotoState,
-  createPreviewUrl,
   createInitialPhotoState,
   FLOW_SCREENS,
-  recalculateSessionResults,
   resetPhotoState,
+  removeQueuedPhoto,
   revokePreviewUrl,
 } from './state/photoSession.js';
 
@@ -38,8 +40,11 @@ export default function App() {
   const [photoState, setPhotoState] = useState(() => createInitialPhotoState());
   const [results, setResults] = useState([]);
   const [fileInputKey, setFileInputKey] = useState(0);
+  const latestPhotoStateRef = useRef(photoState);
 
   const validation = useMemo(() => validatePeopleList(people), [people]);
+
+  latestPhotoStateRef.current = photoState;
 
   useEffect(() => {
     if (validation.isValid) {
@@ -48,19 +53,16 @@ export default function App() {
   }, [people, validation.isValid, validation.validPeople]);
 
   useEffect(() => {
-    if (photoState.status !== 'parsed') {
-      setResults([]);
-      return;
-    }
-
-    setResults(recalculateSessionResults(people, photoState));
+    setResults(buildTimelineEntries(people, photoState));
   }, [people, photoState]);
 
   useEffect(
     () => () => {
-      revokePreviewUrl(photoState.previewUrl);
+      latestPhotoStateRef.current.photos.forEach((photo) => {
+        revokePreviewUrl(photo.previewUrl);
+      });
     },
-    [photoState.previewUrl],
+    [],
   );
 
   const handleAddPerson = () => {
@@ -85,30 +87,48 @@ export default function App() {
   };
 
   const handleUpload = async (event) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
 
-    if (!file) {
+    if (files.length === 0) {
       return;
     }
 
-    setPhotoState((currentPhotoState) => {
-      revokePreviewUrl(currentPhotoState.previewUrl);
-      return createLoadingPhotoState();
-    });
+    setPhotoState((currentPhotoState) => createLoadingPhotoState(currentPhotoState));
 
     try {
-      const uploadResult = await extractCaptureDate(file);
-      const previewUrl = uploadResult.status === 'parsed' ? createPreviewUrl(file) : '';
-      const nextState = applyUploadResult(uploadResult, previewUrl);
-      setPhotoState(nextState.photo);
-      setResults(nextState.results);
+      const uploadResults = await Promise.all(
+        files.map(async (file) => {
+          const result = await extractCaptureDate(file);
+          const previewUrl = result.status === 'parsed' ? await createPreviewUrl(file) : '';
 
-      if (uploadResult.status === 'parsed') {
-        setCurrentScreen(FLOW_SCREENS.RESULTS);
-      }
+          return {
+            ...result,
+            file,
+            fileName: result.fileName ?? file.name,
+            mimeType: result.mimeType ?? file.type ?? 'unknown',
+            previewUrl,
+          };
+        }),
+      );
+
+      setPhotoState((currentPhotoState) =>
+        applyQueuedUploadResults(currentPhotoState, uploadResults),
+      );
     } finally {
       setFileInputKey((currentKey) => currentKey + 1);
     }
+  };
+
+  const handleRemovePhoto = (photoId) => {
+    let removedPreviewUrl = '';
+
+    setPhotoState((currentPhotoState) => {
+      const nextState = removeQueuedPhoto(currentPhotoState, photoId);
+      removedPreviewUrl = nextState.removedPreviewUrl;
+      return nextState.photoState;
+    });
+
+    revokePreviewUrl(removedPreviewUrl);
   };
 
   const handleResetPeople = () => {
@@ -136,6 +156,14 @@ export default function App() {
     setCurrentScreen(FLOW_SCREENS.UPLOAD);
   };
 
+  const handleContinueToResults = () => {
+    if (!canContinueToResults(photoState)) {
+      return;
+    }
+
+    setCurrentScreen(FLOW_SCREENS.RESULTS);
+  };
+
   const showPeopleScreen = currentScreen === FLOW_SCREENS.PEOPLE;
   const showUploadScreen = currentScreen === FLOW_SCREENS.UPLOAD;
   const showResultsScreen = currentScreen === FLOW_SCREENS.RESULTS;
@@ -143,12 +171,12 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="hero">
-        <p className="hero__eyebrow">How Old</p>
+        <p className="hero__eyebrow">How Old?</p>
         <h1>See how old people were when a photo was taken.</h1>
         <p>
-          Add up to five people, upload an image, and the app will read the photo date from the file
-          metadata locally in your browser. People are stored in browser localStorage so you can return
-          later, while uploaded files stay in memory only.
+          Add up to five people, queue up to five photos, and the app will read each capture date from
+          image metadata locally in your browser. People are stored in browser localStorage so you can
+          return later, while uploaded files stay in memory only.
         </p>
         <div className="hero__badges">
           <span className="badge">Frontend only</span>
@@ -177,13 +205,14 @@ export default function App() {
             photoState={photoState}
             onUpload={handleUpload}
             onBack={handleBackToPeople}
+            onContinue={handleContinueToResults}
+            onRemovePhoto={handleRemovePhoto}
           />
         ) : null}
 
         {showResultsScreen ? (
           <ResultsScreen
             results={results}
-            photoState={photoState}
             onReturnToUpload={handleReturnToUpload}
             onReturnToPeople={handleBackToPeople}
           />

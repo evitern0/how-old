@@ -1,11 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../src/App.jsx';
 import { extractCaptureDate } from '../../src/lib/metadata/extractCaptureDate.js';
 import {
-  createImageFile,
+  createImageFiles,
   createMissingMetadataResult,
   createParsedUploadResult,
+  createUnsupportedUploadResult,
 } from '../setup.js';
 
 vi.mock('../../src/lib/metadata/extractCaptureDate.js', () => ({
@@ -17,8 +18,20 @@ describe('App upload flow', () => {
     window.localStorage.clear();
   });
 
-  it('moves through people, upload, and results screens on successful upload', async () => {
-    extractCaptureDate.mockResolvedValueOnce(createParsedUploadResult());
+  it('queues multiple uploads, allows removal, and waits for explicit continue', async () => {
+    extractCaptureDate
+      .mockResolvedValueOnce(
+        createParsedUploadResult({
+          fileName: 'older.heic',
+          capturedAt: '2021-06-10',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createParsedUploadResult({
+          fileName: 'newer.heic',
+          capturedAt: '2022-06-10',
+        }),
+      );
 
     render(<App />);
 
@@ -31,18 +44,41 @@ describe('App upload flow', () => {
     expect(screen.getByRole('heading', { name: 'Photo' })).toBeInTheDocument();
 
     const input = document.querySelector('input[type="file"]');
-    const file = createImageFile('img.heic', 'image/heic');
-    fireEvent.change(input, { target: { files: [file] } });
+    fireEvent.change(input, {
+      target: {
+        files: createImageFiles(['older.heic', 'newer.heic']),
+      },
+    });
 
     expect(screen.getByText('Reading image metadata...')).toBeInTheDocument();
 
+    await screen.findByText('older.heic');
+    expect(screen.getByRole('heading', { name: 'Photo' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Results' })).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove older.heic' }));
+    expect(screen.queryByText('older.heic')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Continue to results' }));
     await screen.findByRole('heading', { name: 'Results' });
-    await screen.findByText('8 months');
-    expect(screen.getByRole('img', { name: 'Uploaded photo preview' })).toBeInTheDocument();
+    expect(screen.getByText('newer.heic')).toBeInTheDocument();
+    expect(screen.getByText('1 year, 8 months')).toBeInTheDocument();
   });
 
-  it('stays on upload screen and shows error when metadata is missing', async () => {
-    extractCaptureDate.mockResolvedValueOnce(createMissingMetadataResult());
+  it('keeps valid photos from a mixed batch and reports invalid files by name', async () => {
+    extractCaptureDate
+      .mockResolvedValueOnce(
+        createParsedUploadResult({
+          fileName: 'valid.heic',
+          capturedAt: '2021-06-10',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createMissingMetadataResult({ fileName: 'missing-date.heic' }),
+      )
+      .mockResolvedValueOnce(
+        createUnsupportedUploadResult({ fileName: 'broken.heic' }),
+      );
 
     render(<App />);
 
@@ -55,10 +91,14 @@ describe('App upload flow', () => {
 
     const input = document.querySelector('input[type="file"]');
     fireEvent.change(input, {
-      target: { files: [createImageFile('img.heic', 'image/heic')] },
+      target: {
+        files: createImageFiles(['valid.heic', 'missing-date.heic', 'broken.heic']),
+      },
     });
 
-    await screen.findByText('This image does not expose a readable capture date. Choose a different image file.');
+    await screen.findByText('valid.heic');
+    await screen.findByText('missing-date.heic: This image does not expose a readable capture date. Choose a different image file.');
+    await screen.findByText('broken.heic: This file could not be read as a valid image. Choose a different image file.');
     expect(screen.getByRole('heading', { name: 'Photo' })).toBeInTheDocument();
   });
 
@@ -77,8 +117,14 @@ describe('App upload flow', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('Casey');
   });
 
-  it('supports results screen return actions', async () => {
-    extractCaptureDate.mockResolvedValue(createParsedUploadResult());
+  it('supports results screen return actions while preserving the queued upload state', async () => {
+    extractCaptureDate
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'img.heic', capturedAt: '2021-06-10' }),
+      )
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'img-2.heic', capturedAt: '2022-06-10' }),
+      );
 
     render(<App />);
 
@@ -89,48 +135,75 @@ describe('App upload flow', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     fireEvent.change(document.querySelector('input[type="file"]'), {
-      target: { files: [createImageFile('img.heic', 'image/heic')] },
+      target: { files: createImageFiles(['img.heic']) },
     });
 
+    await screen.findByText('img.heic');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue to results' }));
     await screen.findByRole('heading', { name: 'Results' });
-    await userEvent.click(screen.getByRole('button', { name: 'Upload another image' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Back to upload' }));
     expect(screen.getByRole('heading', { name: 'Photo' })).toBeInTheDocument();
+    expect(screen.getByText('img.heic')).toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Back' }));
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.change(document.querySelector('input[type="file"]'), {
-      target: { files: [createImageFile('img-2.heic', 'image/heic')] },
+      target: { files: createImageFiles(['img-2.heic']) },
     });
 
+    await screen.findByText('img-2.heic');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue to results' }));
     await screen.findByRole('heading', { name: 'Results' });
     await userEvent.click(screen.getByRole('button', { name: 'Back to people' }));
     expect(screen.getByRole('heading', { name: 'People' })).toBeInTheDocument();
   });
 
-  it('re-runs with a second upload from results path and refreshes output', async () => {
+  it('renders results in chronological order and keeps people in configured order', async () => {
     extractCaptureDate
-      .mockResolvedValueOnce(createParsedUploadResult({ capturedAt: '2021-06-10' }))
-      .mockResolvedValueOnce(createParsedUploadResult({ capturedAt: '2022-06-10' }));
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'middle.heic', capturedAt: '2022-05-01' }),
+      )
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'oldest.heic', capturedAt: '2021-06-10' }),
+      )
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'latest.heic', capturedAt: '2022-05-01' }),
+      );
 
     render(<App />);
 
-    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    await userEvent.type(screen.getByLabelText('Name'), 'Ada');
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Add person' }));
+    const nameFields = screen.getAllByLabelText('Name');
+    const dobFields = screen.getAllByLabelText('Date of birth');
+    await userEvent.type(nameFields[1], 'Lin');
+    fireEvent.change(dobFields[1], {
+      target: { value: '2021-01-10' },
+    });
+
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     fireEvent.change(document.querySelector('input[type="file"]'), {
-      target: { files: [createImageFile('img.heic', 'image/heic')] },
-    });
-    await screen.findByText('8 months');
-
-    await userEvent.click(screen.getByRole('button', { name: 'Upload another image' }));
-    fireEvent.change(document.querySelector('input[type="file"]'), {
-      target: { files: [createImageFile('img-2.heic', 'image/heic')] },
+      target: { files: createImageFiles(['middle.heic', 'oldest.heic', 'latest.heic']) },
     });
 
-    await screen.findByText('1 year, 8 months');
+    await screen.findByText('middle.heic');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue to results' }));
+
+    await screen.findByRole('heading', { name: 'Results' });
+    const fileHeadings = screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent);
+    expect(fileHeadings).toEqual(['oldest.heic', 'middle.heic', 'latest.heic']);
+
+    const firstTimelineEntry = screen.getByRole('heading', { name: 'oldest.heic' }).closest('article');
+    expect(firstTimelineEntry).not.toBeNull();
+    const peopleNames = within(firstTimelineEntry).getAllByText(/Ada|Lin/).map((node) => node.textContent);
+    expect(peopleNames).toEqual(['Ada', 'Lin']);
+
+    expect(screen.getByText('Photo date: 2021-06-10')).toBeInTheDocument();
   });
 
   it('resets people form and clears persisted data', async () => {

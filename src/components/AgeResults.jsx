@@ -1,40 +1,47 @@
-export default function AgeResults({ results, photoState }) {
+export default function AgeResults({ results }) {
   return (
     <section className="card">
       <h2>Results</h2>
       <p className="card__subtitle">
-        Each age is shown as years, months, and days at the detected photo date.
+        Photos appear from oldest to newest.
       </p>
 
-      {photoState.status === 'parsed' && photoState.previewUrl ? (
-        <figure className="result-photo-preview">
-          <img src={photoState.previewUrl} alt="Uploaded photo preview" />
-        </figure>
-      ) : null}
-
-      {photoState.status !== 'parsed' ? (
-        <div className="empty-state">
-          <strong>No photo date yet</strong>
-          <p className="muted">Upload a supported image to calculate ages.</p>
-        </div>
-      ) : results.length === 0 ? (
+      {results.length === 0 ? (
         <div className="empty-state">
           <strong>Ready to calculate</strong>
-          <p className="muted">Add valid people entries to see ages for this photo.</p>
+          <p className="muted">Add valid people entries and at least one photo to see the timeline.</p>
         </div>
       ) : (
-        <ul className="results-list">
-          {results.map((result) => (
-            <li className="result-item" key={result.personId}>
-              <div className="result-item__head">
-                <strong>{result.name}</strong>
-                <span className="result-item__age">{result.ageLabel}</span>
+        <div className="timeline">
+          {results.map((entry) => (
+            <article className="timeline-entry" key={entry.photoId}>
+              <div className="timeline-entry__media">
+                <img src={entry.thumbnailUrl} alt={`${entry.fileName} preview`} />
               </div>
-              <div className="muted">Born {result.dateOfBirth}</div>
-              <div className="muted">Photo date {result.photoDate}</div>
-            </li>
+
+              <div className="timeline-entry__marker" aria-hidden="true">
+                <span className="timeline-entry__dot" />
+              </div>
+
+              <div className="timeline-entry__content">
+                <p className="timeline-entry__meta">Photo date: {entry.capturedAt}</p>
+                <h3>{entry.fileName}</h3>
+                <p className="muted">Metadata field {entry.sourceTag}</p>
+
+                <ul className="results-list results-list--timeline">
+                  {entry.ageResults.map((result) => (
+                    <li className="result-item" key={`${entry.photoId}:${result.personId}`}>
+                      <div className="result-item__head">
+                        <strong>{result.name}</strong>
+                        <span className="result-item__age">{result.ageLabel}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
           ))}
-        </ul>
+        </div>
       )}
     </section>
   );
