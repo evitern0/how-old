@@ -120,6 +120,18 @@ export function resetPhotoState(currentPhotoState) {
   return createInitialPhotoState();
 }
 
+export function dismissUploadFeedback(currentPhotoState) {
+  const safePhotoState = currentPhotoState ?? createInitialPhotoState();
+
+  return {
+    ...safePhotoState,
+    fileErrors: [],
+    summaryMessage: '',
+    status: 'idle',
+    message: '',
+  };
+}
+
 export function createInitialSessionResults() {
   return [];
 }
@@ -210,7 +222,7 @@ export function buildTimelineEntries(people, photoState) {
   }
 
   const validation = validatePeopleList(people);
-  if (!validation.isValid) {
+  if (!validation.isValid || validation.validPeople.length === 0) {
     return [];
   }
 

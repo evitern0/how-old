@@ -190,16 +190,41 @@ button:disabled {
   border: 1px solid rgba(251, 113, 133, 0.22);
 }
 
+.symbol-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0 0.7rem;
+  border-radius: 999px;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  background: rgba(125, 211, 252, 0.12);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.symbol-button--danger {
+  color: var(--danger);
+  border-color: rgba(253, 164, 175, 0.26);
+  background: rgba(251, 113, 133, 0.12);
+}
+
 .people-list {
   display: grid;
   gap: 16px;
 }
 
 .person-row {
-  padding: 16px;
+  padding: 14px;
   border: 1px solid rgba(148, 163, 184, 0.16);
   border-radius: 18px;
   background: rgba(2, 6, 23, 0.24);
+}
+
+.person-row--done {
+  border-color: rgba(134, 239, 172, 0.24);
+  background: rgba(20, 83, 45, 0.2);
 }
 
 .person-row__header {
@@ -207,11 +232,48 @@ button:disabled {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+}
+
+.person-row__title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .person-row__header strong {
   font-size: 0.96rem;
+}
+
+.person-row__status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--success);
+}
+
+.person-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.person-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.7rem 0.15rem 0;
+}
+
+.person-summary__name {
+  margin: 0;
+  font-weight: 700;
+}
+
+.person-summary__dob {
+  margin: 4px 0 0;
+  color: var(--text-muted);
 }
 
 .person-grid {
@@ -270,6 +332,13 @@ button:disabled {
   color: var(--text-muted);
   font-size: 0.9rem;
   line-height: 1.5;
+}
+
+.feedback-banner__content {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .alert {
@@ -346,6 +415,12 @@ button:disabled {
   margin: 0;
   font-size: 1rem;
   overflow-wrap: anywhere;
+}
+
+.upload-photo-card__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .upload-photo-card__meta {

@@ -6,6 +6,8 @@ import { extractCaptureDate } from './lib/metadata/extractCaptureDate.js';
 import { createPreviewUrl } from './lib/preview/createPreviewUrl.js';
 import {
   createBlankPerson,
+  editPersonById,
+  finalizePersonById,
   normalizePeople,
   validatePeopleList,
   updatePersonById,
@@ -24,6 +26,7 @@ import {
   createInitialWorkflowState,
   createLoadingPhotoState,
   createInitialPhotoState,
+  dismissUploadFeedback,
   FLOW_SCREENS,
   resetPhotoState,
   removeQueuedPhoto,
@@ -77,7 +80,39 @@ export default function App() {
   };
 
   const handleUpdatePerson = (id, field, value) => {
-    setPeople((currentPeople) => updatePersonById(currentPeople, id, field, value));
+    setPeople((currentPeople) => {
+      const nextPeople = updatePersonById(currentPeople, id, field, value);
+      return nextPeople.map((person) => {
+        if (person.id !== id) {
+          return person;
+        }
+
+        if (field === 'name' || field === 'dateOfBirth') {
+          const nextName = field === 'name' ? value : person.name;
+          const nextDateOfBirth = field === 'dateOfBirth' ? value : person.dateOfBirth;
+          const canAutoFinalize = Boolean(nextName.trim()) && Boolean(nextDateOfBirth);
+          const shouldEdit = !canAutoFinalize || person.done === false;
+
+          return {
+            ...person,
+            name: nextName,
+            dateOfBirth: nextDateOfBirth,
+            editing: shouldEdit,
+            done: canAutoFinalize ? true : person.done,
+          };
+        }
+
+        return person;
+      });
+    });
+  };
+
+  const handleFinalizePerson = (id) => {
+    setPeople((currentPeople) => finalizePersonById(currentPeople, id));
+  };
+
+  const handleEditPerson = (id) => {
+    setPeople((currentPeople) => editPersonById(currentPeople, id));
   };
 
   const handleRemovePerson = (id) => {
@@ -141,6 +176,15 @@ export default function App() {
     setFileInputKey((currentKey) => currentKey + 1);
   };
 
+  const handleDismissFeedback = () => {
+    setPhotoState((currentPhotoState) => dismissUploadFeedback(currentPhotoState));
+  };
+
+  const handleResetUpload = () => {
+    setPhotoState((currentPhotoState) => resetPhotoState(currentPhotoState));
+    setFileInputKey((currentKey) => currentKey + 1);
+  };
+
   const handleContinueToUpload = () => {
     if (!canContinueToUpload(validation)) {
       return;
@@ -155,6 +199,7 @@ export default function App() {
 
   const handleReturnToUpload = () => {
     setCurrentScreen(FLOW_SCREENS.UPLOAD);
+    setPhotoState((currentPhotoState) => dismissUploadFeedback(currentPhotoState));
   };
 
   const handleContinueToResults = () => {
@@ -195,6 +240,8 @@ export default function App() {
             onAddPerson={handleAddPerson}
             onUpdatePerson={handleUpdatePerson}
             onRemovePerson={handleRemovePerson}
+            onFinalizePerson={handleFinalizePerson}
+            onEditPerson={handleEditPerson}
             onContinue={handleContinueToUpload}
             onReset={handleResetPeople}
           />
@@ -209,6 +256,8 @@ export default function App() {
             onBack={handleBackToPeople}
             onContinue={handleContinueToResults}
             onRemovePhoto={handleRemovePhoto}
+            onDismissFeedback={handleDismissFeedback}
+            onResetUpload={handleResetUpload}
           />
         ) : null}
 

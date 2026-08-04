@@ -18,7 +18,7 @@
 **Purpose**: Prepare shared fixtures and styling hooks for the compact setup-flow refactor
 
 - [ ] T001 [P] Add person-row status and upload-feedback test fixtures in tests/setup.js
-- [ ] T002 [P] Add compact setup-flow style tokens and symbol-button utility classes in src/styles/global.css
+- [x] T002 [P] Add compact setup-flow style tokens and symbol-button utility classes in src/styles/global.css
 - [ ] T003 [P] Add task-specific quickstart notes for compact people and upload flows in specs/004-streamline-input-views/quickstart.md
 
 ---
@@ -29,12 +29,12 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Extend person normalization and readiness validation for `editing` and `done` row states in src/lib/validation/peopleValidation.js
-- [ ] T005 [P] Extend people persistence and legacy hydration for finalized rows in src/state/localStorage.js
-- [ ] T006 [P] Split durable queued-photo helpers from transient upload-feedback helpers in src/state/photoSession.js
-- [ ] T007 Update flow orchestration to track people readiness, transient upload feedback, and reset boundaries in src/App.jsx
-- [ ] T008 Align shared screen prop contracts for finalized people rows and upload feedback controls in src/components/PeopleScreen.jsx
-- [ ] T009 Align shared screen prop contracts for upload reset and dismissible feedback in src/components/UploadScreen.jsx
+- [x] T004 [P] Extend person normalization and readiness validation for `editing` and `done` row states in src/lib/validation/peopleValidation.js
+- [x] T005 [P] Extend people persistence and legacy hydration for finalized rows in src/state/localStorage.js
+- [x] T006 [P] Split durable queued-photo helpers from transient upload-feedback helpers in src/state/photoSession.js
+- [x] T007 Update flow orchestration to track people readiness, transient upload feedback, and reset boundaries in src/App.jsx
+- [x] T008 Align shared screen prop contracts for finalized people rows and upload feedback controls in src/components/PeopleScreen.jsx
+- [x] T009 Align shared screen prop contracts for upload reset and dismissible feedback in src/components/UploadScreen.jsx
 
 **Checkpoint**: Shared workflow state, persistence, and screen contracts are ready for story work
 
@@ -48,18 +48,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add integration coverage for finalize, edit, remove, and continue-gating behavior in tests/integration/app-flow.test.jsx
-- [ ] T011 [P] [US1] Add unit coverage for person readiness, mixed row states, and invalid Enter handling in tests/unit/people-form.test.jsx
-- [ ] T012 [P] [US1] Add persistence coverage for finalized-row hydration and reset behavior in tests/unit/local-storage.test.js
+- [x] T010 [P] [US1] Add integration coverage for finalize, edit, remove, and continue-gating behavior in tests/integration/app-flow.test.jsx
+- [x] T011 [P] [US1] Add unit coverage for person readiness, mixed row states, and invalid Enter handling in tests/unit/people-form.test.jsx
+- [x] T012 [P] [US1] Add persistence coverage for finalized-row hydration and reset behavior in tests/unit/local-storage.test.js
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Implement row-status helpers, finalize transitions, and readiness summaries in src/lib/validation/peopleValidation.js
-- [ ] T014 [P] [US1] Persist finalized person rows and legacy stored-person fallback behavior in src/state/localStorage.js
-- [ ] T015 [US1] Update people-step handlers, Enter-to-Done behavior, and continue gating in src/App.jsx
-- [ ] T016 [US1] Rebuild compact editable and finalized person-row rendering with `+`, `Done`, `Edit`, and `X` controls in src/components/PeopleForm.jsx
-- [ ] T017 [US1] Update people-step actions and readiness messaging in src/components/PeopleScreen.jsx
-- [ ] T018 [US1] Apply compact person-row layout, placeholder-driven inputs, and readonly summary styling in src/styles/global.css
+- [x] T013 [P] [US1] Implement row-status helpers, finalize transitions, and readiness summaries in src/lib/validation/peopleValidation.js
+- [x] T014 [P] [US1] Persist finalized person rows and legacy stored-person fallback behavior in src/state/localStorage.js
+- [x] T015 [US1] Update people-step handlers, Enter-to-Done behavior, and continue gating in src/App.jsx
+- [x] T016 [US1] Rebuild compact editable and finalized person-row rendering with `+`, `Done`, `Edit`, and `X` controls in src/components/PeopleForm.jsx
+- [x] T017 [US1] Update people-step actions and readiness messaging in src/components/PeopleScreen.jsx
+- [x] T018 [US1] Apply compact person-row layout, placeholder-driven inputs, and readonly summary styling in src/styles/global.css
 
 **Checkpoint**: User Story 1 is independently functional with compact person entry and explicit row finalization
 
@@ -73,17 +73,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Add integration coverage for dismissing upload feedback and clearing it on return from results in tests/integration/app-flow.test.jsx
-- [ ] T020 [P] [US2] Add integration coverage for upload `X` removal and upload Reset behavior in tests/integration/app-flow.test.jsx
-- [ ] T021 [P] [US2] Add unit coverage for transient upload-feedback helpers and queue-preserving resets in tests/unit/photo-session.test.js
+- [x] T019 [P] [US2] Add integration coverage for dismissing upload feedback and clearing it on return from results in tests/integration/app-flow.test.jsx
+- [x] T020 [P] [US2] Add integration coverage for upload `X` removal and upload Reset behavior in tests/integration/app-flow.test.jsx
+- [x] T021 [P] [US2] Add unit coverage for transient upload-feedback helpers and queue-preserving resets in tests/unit/photo-session.test.js
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Implement transient upload-feedback creation, dismissal, and clearing helpers in src/state/photoSession.js
-- [ ] T023 [US2] Update upload orchestration to clear feedback on navigation, support upload reset, and preserve queued photos in src/App.jsx
-- [ ] T024 [US2] Render dismissible upload notices and per-photo `X` controls in src/components/PhotoUpload.jsx
-- [ ] T025 [US2] Add upload-step Reset and feedback-dismiss actions in src/components/UploadScreen.jsx
-- [ ] T026 [US2] Apply compact upload queue, feedback banner, and symbol-button styling in src/styles/global.css
+- [x] T022 [P] [US2] Implement transient upload-feedback creation, dismissal, and clearing helpers in src/state/photoSession.js
+- [x] T023 [US2] Update upload orchestration to clear feedback on navigation, support upload reset, and preserve queued photos in src/App.jsx
+- [x] T024 [US2] Render dismissible upload notices and per-photo `X` controls in src/components/PhotoUpload.jsx
+- [x] T025 [US2] Add upload-step Reset and feedback-dismiss actions in src/components/UploadScreen.jsx
+- [x] T026 [US2] Apply compact upload queue, feedback banner, and symbol-button styling in src/styles/global.css
 
 **Checkpoint**: User Story 2 is independently functional with dismissible upload feedback and queue reset behavior
 
@@ -97,15 +97,15 @@
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Add integration coverage for compact people and upload layout regressions in tests/integration/app-flow.test.jsx
-- [ ] T028 [P] [US3] Add component-level rendering assertions for compact screen actions and accessible symbol controls in tests/unit/people-form.test.jsx
+- [x] T027 [P] [US3] Add integration coverage for compact people and upload layout regressions in tests/integration/app-flow.test.jsx
+- [x] T028 [P] [US3] Add component-level rendering assertions for compact screen actions and accessible symbol controls in tests/unit/people-form.test.jsx
 
 ### Implementation for User Story 3
 
-- [ ] T029 [P] [US3] Tighten shared copy, step framing, and action hierarchy across src/components/PeopleScreen.jsx
-- [ ] T030 [P] [US3] Tighten shared copy, step framing, and action hierarchy across src/components/UploadScreen.jsx
-- [ ] T031 [P] [US3] Refresh the shared compact layout rhythm, responsive behavior, and action alignment in src/styles/global.css
-- [ ] T032 [US3] Reconcile app-shell and screen-container spacing with the streamlined setup flow in src/App.jsx
+- [x] T029 [P] [US3] Tighten shared copy, step framing, and action hierarchy across src/components/PeopleScreen.jsx
+- [x] T030 [P] [US3] Tighten shared copy, step framing, and action hierarchy across src/components/UploadScreen.jsx
+- [x] T031 [P] [US3] Refresh the shared compact layout rhythm, responsive behavior, and action alignment in src/styles/global.css
+- [x] T032 [US3] Reconcile app-shell and screen-container spacing with the streamlined setup flow in src/App.jsx
 
 **Checkpoint**: User Story 3 completes the compact, consistent setup-flow presentation without breaking earlier stories
 

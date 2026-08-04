@@ -6,6 +6,8 @@ export default function PeopleScreen({
   onAddPerson,
   onUpdatePerson,
   onRemovePerson,
+  onFinalizePerson,
+  onEditPerson,
   onContinue,
   onReset,
 }) {
@@ -18,6 +20,8 @@ export default function PeopleScreen({
         onAddPerson={onAddPerson}
         onUpdatePerson={onUpdatePerson}
         onRemovePerson={onRemovePerson}
+        onFinalizePerson={onFinalizePerson}
+        onEditPerson={onEditPerson}
       />
       <div className="screen-actions">
         <button className="button button--secondary" type="button" onClick={onReset}>

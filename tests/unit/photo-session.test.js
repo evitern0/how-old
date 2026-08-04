@@ -121,8 +121,20 @@ describe('photo session queue helpers', () => {
   it('builds oldest-to-newest timeline entries and preserves configured people order', () => {
     const timelineEntries = buildTimelineEntries(
       [
-        { id: 'person-1', name: 'Ada', dateOfBirth: '1990-01-10' },
-        { id: 'person-2', name: 'Lin', dateOfBirth: '1995-03-02' },
+        {
+          id: 'person-1',
+          name: 'Ada',
+          dateOfBirth: '1990-01-10',
+          editing: false,
+          done: true,
+        },
+        {
+          id: 'person-2',
+          name: 'Lin',
+          dateOfBirth: '1995-03-02',
+          editing: false,
+          done: true,
+        },
       ],
       {
         ...createInitialPhotoState(),
