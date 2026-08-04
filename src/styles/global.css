@@ -459,6 +459,7 @@ button:disabled {
 .result-item__age {
   color: var(--accent);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .result-photo-preview {
@@ -632,6 +633,12 @@ button:disabled {
     position: absolute;
     top: 12px;
     right: 12px;
+  }
+
+  .results-list--timeline .result-item__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
   }
 
   .result-item__age {
