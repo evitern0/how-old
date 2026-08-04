@@ -32,7 +32,8 @@ strongest baseline control.
 ### II. Metadata Truth and Transparency
 The app MUST read the image capture timestamp from available metadata and MUST clearly indicate
 which timestamp field was used. If metadata is missing, invalid, or ambiguous, the UI MUST
-surface this state and MUST require a user-supplied date before computing ages.
+surface this state and MUST require the user to choose a different image file before computing
+ages.
 
 Rationale: Age output is only as trustworthy as the source date; users need visibility into data
 provenance.

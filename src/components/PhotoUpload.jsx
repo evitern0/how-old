@@ -1,10 +1,12 @@
-export default function PhotoUpload({ fileInputKey, photoState, onUpload }) {
+import { MAX_QUEUED_PHOTOS } from '../state/photoSession.js';
+
+export default function PhotoUpload({ fileInputKey, photoState, onUpload, onRemovePhoto }) {
   return (
     <section className="card">
       <h2>Photo</h2>
       <p className="card__subtitle">
-        Upload a photo from your computer or phone. The app reads the capture date locally from the
-        file metadata.
+        Upload photos from your computer or phone. The app reads each capture date locally from file
+        metadata and lets you review the queue before continuing.
       </p>
 
       <input
@@ -12,17 +14,14 @@ export default function PhotoUpload({ fileInputKey, photoState, onUpload }) {
         className="upload-input"
         type="file"
         accept="image/*"
+        multiple
         onChange={onUpload}
       />
 
-      {photoState.status === 'parsed' ? (
-        <div className="notice" style={{ marginTop: '16px' }}>
-          <strong>Photo date:</strong> {photoState.capturedAt}
-          <div className="muted" style={{ marginTop: '6px' }}>
-            Metadata field: {photoState.sourceTag}
-          </div>
-        </div>
-      ) : null}
+      <p className="help-text" style={{ marginTop: '16px' }}>
+        You can queue up to {MAX_QUEUED_PHOTOS} photos total. Valid files stay queued even when other
+        files in the same selection fail.
+      </p>
 
       {photoState.status === 'loading' ? (
         <div className="notice" style={{ marginTop: '16px' }}>
@@ -30,15 +29,58 @@ export default function PhotoUpload({ fileInputKey, photoState, onUpload }) {
         </div>
       ) : null}
 
-      {photoState.status === 'unsupported' || photoState.status === 'missing-metadata' ? (
-        <div className="alert" style={{ marginTop: '16px' }}>
-          {photoState.message}
+      {photoState.summaryMessage ? (
+        <div className="notice" style={{ marginTop: '16px' }}>
+          {photoState.summaryMessage}
         </div>
       ) : null}
 
-      <p className="help-text" style={{ marginTop: '16px' }}>
-        If the image does not expose a readable capture date, choose a different file.
-      </p>
+      {photoState.fileErrors.length > 0 ? (
+        <div className="alert" style={{ marginTop: '16px' }}>
+          <strong>Some files could not be added.</strong>
+          <ul className="file-error-list">
+            {photoState.fileErrors.map((error) => (
+              <li key={`${error.fileName}:${error.message}`}>
+                {error.fileName}: {error.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {photoState.photos.length === 0 ? (
+        <div className="empty-state upload-empty-state">
+          <strong>No photos queued yet</strong>
+          <p className="muted">Add one or more supported images to build the timeline.</p>
+        </div>
+      ) : (
+        <ul className="upload-queue">
+          {photoState.photos.map((photo) => (
+            <li className="upload-queue__item" key={photo.id}>
+              <article className="upload-photo-card">
+                {photo.previewUrl ? (
+                  <img src={photo.previewUrl} alt={`${photo.fileName} preview`} className="upload-photo-card__image" />
+                ) : null}
+                <div className="upload-photo-card__content">
+                  <div className="upload-photo-card__header">
+                    <h3>{photo.fileName}</h3>
+                    <button
+                      className="button button--secondary"
+                      type="button"
+                      onClick={() => onRemovePhoto(photo.id)}
+                      aria-label={`Remove ${photo.fileName}`}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <p className="upload-photo-card__meta">Capture date {photo.capturedAt}</p>
+                  <p className="muted">Metadata field {photo.sourceTag}</p>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
