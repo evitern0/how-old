@@ -39,13 +39,14 @@ export default function PeopleForm({
         {people.map((person, index) => {
           const issues = validation.issuesById[person.id] ?? {};
           const isEditing = person.editing !== false;
+          const isReady = person.done && !isEditing;
 
           return (
-            <article className={`person-row${person.done ? ' person-row--done' : ''}`} key={person.id}>
+            <article className={`person-row${isReady ? ' person-row--done' : ''}`} key={person.id}>
               <div className="person-row__header">
                 <div className="person-row__title-wrap">
                   <strong>Person {index + 1}</strong>
-                  {person.done ? <span className="person-row__status">Ready</span> : null}
+                  {isReady ? <span className="person-row__status">Ready</span> : null}
                 </div>
                 <div className="person-row__actions">
                   {isEditing ? (
@@ -97,7 +98,9 @@ export default function PeopleForm({
                       onChange={(event) => onUpdatePerson(person.id, 'name', event.target.value)}
                       onKeyDown={(event) => handleKeyDown(event, person)}
                     />
-                    {issues.name ? <p className="field__error">{issues.name}</p> : null}
+                    <p className={`field__error${issues.name ? '' : ' field__error--placeholder'}`}>
+                      {issues.name}
+                    </p>
                   </div>
 
                   <div className="field">
@@ -110,7 +113,11 @@ export default function PeopleForm({
                       onChange={(event) => onUpdatePerson(person.id, 'dateOfBirth', event.target.value)}
                       onKeyDown={(event) => handleKeyDown(event, person)}
                     />
-                    {issues.dateOfBirth ? <p className="field__error">{issues.dateOfBirth}</p> : null}
+                    <p
+                      className={`field__error${issues.dateOfBirth ? '' : ' field__error--placeholder'}`}
+                    >
+                      {issues.dateOfBirth}
+                    </p>
                   </div>
                 </div>
               ) : (

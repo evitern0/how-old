@@ -5,9 +5,11 @@ export default function PhotoUpload({
   photoState,
   onUpload,
   onRemovePhoto,
-  onDismissFeedback,
+  onDismissErrors,
   onResetUpload,
 }) {
+  const isUploadDisabled = photoState.photos.length >= MAX_QUEUED_PHOTOS;
+
   return (
     <section className="card">
       <h2>Photo</h2>
@@ -23,12 +25,14 @@ export default function PhotoUpload({
         accept="image/*"
         multiple
         onChange={onUpload}
+        disabled={isUploadDisabled}
       />
 
       <div className="toolbar" style={{ marginTop: '16px' }}>
         <p className="help-text">
-          You can queue up to {MAX_QUEUED_PHOTOS} photos total. Valid files stay queued even when other
-          files in the same selection fail.
+          {isUploadDisabled
+            ? `Photo queue is full (${MAX_QUEUED_PHOTOS}/${MAX_QUEUED_PHOTOS}). Remove a photo or reset to upload more.`
+            : `You can queue up to ${MAX_QUEUED_PHOTOS} photos total. Valid files stay queued even when other files in the same selection fail.`}
         </p>
         <button className="symbol-button" type="button" onClick={onResetUpload}>
           Reset
@@ -39,9 +43,6 @@ export default function PhotoUpload({
         <div className="notice" style={{ marginTop: '16px' }}>
           <div className="feedback-banner__content">
             <span>{photoState.message}</span>
-            <button className="symbol-button" type="button" onClick={onDismissFeedback} aria-label="Dismiss feedback">
-              ×
-            </button>
           </div>
         </div>
       ) : null}
@@ -50,9 +51,6 @@ export default function PhotoUpload({
         <div className="notice" style={{ marginTop: '16px' }}>
           <div className="feedback-banner__content">
             <span>{photoState.summaryMessage}</span>
-            <button className="symbol-button" type="button" onClick={onDismissFeedback} aria-label="Dismiss feedback">
-              ×
-            </button>
           </div>
         </div>
       ) : null}
@@ -61,13 +59,13 @@ export default function PhotoUpload({
         <div className="alert" style={{ marginTop: '16px' }}>
           <div className="feedback-banner__content">
             <strong>Some files could not be added.</strong>
-            <button className="symbol-button" type="button" onClick={onDismissFeedback} aria-label="Dismiss feedback">
+            <button className="symbol-button" type="button" onClick={onDismissErrors} aria-label="Dismiss feedback">
               ×
             </button>
           </div>
           <ul className="file-error-list">
-            {photoState.fileErrors.map((error) => (
-              <li key={`${error.fileName}:${error.message}`}>
+            {photoState.fileErrors.map((error, index) => (
+              <li key={`${error.fileName}:${error.message}:${index}`}>
                 {error.fileName}: {error.message}
               </li>
             ))}

@@ -8,7 +8,7 @@ export default function UploadScreen({
   onBack,
   onContinue,
   onRemovePhoto,
-  onDismissFeedback,
+  onDismissErrors,
   onResetUpload,
 }) {
   return (
@@ -19,7 +19,7 @@ export default function UploadScreen({
         photoState={photoState}
         onUpload={onUpload}
         onRemovePhoto={onRemovePhoto}
-        onDismissFeedback={onDismissFeedback}
+        onDismissErrors={onDismissErrors}
         onResetUpload={onResetUpload}
       />
       <div className="screen-actions">

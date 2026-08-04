@@ -9,6 +9,19 @@ export const FLOW_SCREENS = Object.freeze({
 
 export const MAX_QUEUED_PHOTOS = 5;
 
+function createFileFingerprint(entry) {
+  if (!entry) {
+    return '';
+  }
+
+  const fileName = entry.fileName ?? entry.file?.name ?? '';
+  const mimeType = entry.mimeType ?? entry.file?.type ?? 'unknown';
+  const fileSize = entry.fileSize ?? entry.file?.size ?? '';
+  const lastModified = entry.lastModified ?? entry.file?.lastModified ?? '';
+
+  return `${fileName}::${mimeType}::${fileSize}::${lastModified}`;
+}
+
 function createPhotoId() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -25,6 +38,7 @@ function createQueuedPhoto(entry, addedOrder, previewUrl) {
     capturedAt: entry.capturedAt ?? '',
     sourceTag: entry.sourceTag ?? '',
     previewUrl,
+    fileFingerprint: createFileFingerprint(entry),
     status: 'parsed',
     addedOrder,
   };
@@ -47,11 +61,7 @@ function buildSummaryMessage(photoCount, errorCount) {
   }
 
   const photoLabel = `${photoCount} photo${photoCount === 1 ? '' : 's'} ready for results.`;
-  if (errorCount === 0) {
-    return photoLabel;
-  }
-
-  return `${photoLabel} ${errorCount} file${errorCount === 1 ? '' : 's'} need attention.`;
+  return photoLabel;
 }
 
 function compareQueuedPhotos(left, right) {
@@ -84,6 +94,10 @@ export function canContinueToUpload(validation) {
 
 export function canContinueToResults(photoState) {
   return Boolean(photoState?.photos?.length) && photoState?.status !== 'loading';
+}
+
+export function canQueueMorePhotos(photoState) {
+  return (photoState?.photos?.length ?? 0) < MAX_QUEUED_PHOTOS;
 }
 
 export function createInitialPhotoState() {
@@ -132,6 +146,15 @@ export function dismissUploadFeedback(currentPhotoState) {
   };
 }
 
+export function dismissUploadErrors(currentPhotoState) {
+  const safePhotoState = currentPhotoState ?? createInitialPhotoState();
+
+  return {
+    ...safePhotoState,
+    fileErrors: [],
+  };
+}
+
 export function createInitialSessionResults() {
   return [];
 }
@@ -162,15 +185,30 @@ export function applyQueuedUploadResults(
   const photos = [...(safePhotoState.photos ?? [])];
   const fileErrors = [];
   let nextAddedOrder = safePhotoState.nextAddedOrder ?? photos.length;
+  const fingerprints = new Set(
+    photos
+      .map((photo) => photo.fileFingerprint || createFileFingerprint(photo))
+      .filter(Boolean),
+  );
 
   uploadResults.forEach((entry) => {
     if (entry?.status === 'parsed' && entry?.capturedAt) {
+      const fingerprint = createFileFingerprint(entry);
+
+      if (fingerprint && fingerprints.has(fingerprint)) {
+        fileErrors.push(createFileError(entry, 'This photo is already in the queue.'));
+        return;
+      }
+
       if (photos.length >= MAX_QUEUED_PHOTOS) {
         fileErrors.push(createFileError(entry, 'You can keep up to five photos in the queue.'));
         return;
       }
 
       photos.push(createQueuedPhoto(entry, nextAddedOrder, createPreviewForEntry(entry)));
+      if (fingerprint) {
+        fingerprints.add(fingerprint);
+      }
       nextAddedOrder += 1;
       return;
     }
