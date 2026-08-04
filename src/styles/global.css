@@ -620,9 +620,18 @@ button:disabled {
     bottom: 0;
   }
 
-  .upload-photo-card__header {
-    flex-direction: column;
-    align-items: stretch;
+  .upload-photo-card {
+    position: relative;
+  }
+
+  .upload-photo-card__content {
+    padding-right: 3rem;
+  }
+
+  .upload-photo-card__header-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
   }
 
   .result-item__age {
