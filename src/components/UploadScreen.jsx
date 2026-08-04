@@ -3,6 +3,7 @@ import PhotoUpload from './PhotoUpload.jsx';
 export default function UploadScreen({
   fileInputKey,
   photoState,
+  canContinue,
   onUpload,
   onBack,
   onContinue,
@@ -25,7 +26,7 @@ export default function UploadScreen({
           className="button"
           type="button"
           onClick={onContinue}
-          disabled={photoState.photos.length === 0 || photoState.status === 'loading'}
+          disabled={!canContinue}
         >
           Continue to results
         </button>

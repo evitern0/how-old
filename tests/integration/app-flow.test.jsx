@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../../src/App.jsx';
@@ -12,6 +14,8 @@ import {
 vi.mock('../../src/lib/metadata/extractCaptureDate.js', () => ({
   extractCaptureDate: vi.fn(),
 }));
+
+const globalStyles = readFileSync(resolve(process.cwd(), 'src/styles/global.css'), 'utf8');
 
 describe('App upload flow', () => {
   beforeEach(() => {
@@ -204,6 +208,40 @@ describe('App upload flow', () => {
     expect(peopleNames).toEqual(['Ada', 'Lin']);
 
     expect(screen.getByText('Photo date: 2021-06-10')).toBeInTheDocument();
+  });
+
+  it('keeps the compact timeline readable on a narrow viewport without horizontal layout classes', async () => {
+    extractCaptureDate
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'older.heic', capturedAt: '2021-06-10' }),
+      )
+      .mockResolvedValueOnce(
+        createParsedUploadResult({ fileName: 'newer.heic', capturedAt: '2022-06-10' }),
+      );
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2020-10-10' },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    fireEvent.change(document.querySelector('input[type="file"]'), {
+      target: { files: createImageFiles(['older.heic', 'newer.heic']) },
+    });
+
+    await screen.findByText('older.heic');
+    await userEvent.click(screen.getByRole('button', { name: 'Continue to results' }));
+    await screen.findByRole('heading', { name: 'Results' });
+
+    const timelineEntries = document.querySelectorAll('.timeline-entry');
+    expect(timelineEntries).toHaveLength(2);
+    expect(document.querySelectorAll('.timeline-entry__marker')).toHaveLength(2);
+    expect(document.querySelectorAll('.timeline-entry__media img')).toHaveLength(2);
+    expect(document.querySelectorAll('.results-list--timeline')).toHaveLength(2);
+
+    expect(globalStyles).toMatch(/@media \(max-width: 640px\)[\s\S]*\.upload-photo-card,\s*\.timeline-entry\s*\{[\s\S]*grid-template-columns:\s*1fr;/);
   });
 
   it('resets people form and clears persisted data', async () => {

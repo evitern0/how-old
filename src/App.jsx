@@ -43,6 +43,7 @@ export default function App() {
   const latestPhotoStateRef = useRef(photoState);
 
   const validation = useMemo(() => validatePeopleList(people), [people]);
+  const canAdvanceToResults = canContinueToResults(photoState);
 
   latestPhotoStateRef.current = photoState;
 
@@ -203,6 +204,7 @@ export default function App() {
           <UploadScreen
             fileInputKey={fileInputKey}
             photoState={photoState}
+            canContinue={canAdvanceToResults}
             onUpload={handleUpload}
             onBack={handleBackToPeople}
             onContinue={handleContinueToResults}

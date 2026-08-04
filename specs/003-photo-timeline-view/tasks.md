@@ -172,3 +172,7 @@
 2. One developer handles upload UI and mixed-batch feedback.
 3. One developer handles the results timeline and compact layout.
 4. Another developer can extend integration tests in parallel.
+
+## Phase 7: Convergence
+
+- [X] T034 Add desktop/mobile layout regression coverage for the compact timeline presentation in tests/integration/app-flow.test.jsx or a dedicated viewport test file under tests/integration/ per FR-010, SC-004, Constitution V, and T024 (partial)
