@@ -43,6 +43,7 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(screen.getByRole('heading', { name: 'Photo' })).toBeInTheDocument();
@@ -90,6 +91,7 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
@@ -113,12 +115,35 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await userEvent.click(screen.getByRole('button', { name: 'Back' }));
 
     expect(screen.getByRole('heading', { name: 'People' })).toBeInTheDocument();
+    expect(screen.getByText('Casey')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Edit Casey' }));
     expect(screen.getByLabelText('Name')).toHaveValue('Casey');
+  });
+
+  it('keeps continue disabled until every person row is explicitly done', async () => {
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2020-10-10' },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'Add person' }));
+    await userEvent.type(screen.getByLabelText('Name'), 'Jordan');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2019-05-11' },
+    });
+
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Done Jordan' }));
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
   it('supports results screen return actions while preserving the queued upload state', async () => {
@@ -136,6 +161,7 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     fireEvent.change(document.querySelector('input[type="file"]'), {
@@ -162,6 +188,114 @@ describe('App upload flow', () => {
     expect(screen.getByRole('heading', { name: 'People' })).toBeInTheDocument();
   });
 
+  it('disables upload input at five queued photos and re-enables it after removing or resetting', async () => {
+    extractCaptureDate.mockImplementation(async (file) =>
+      createParsedUploadResult({
+        fileName: file.name,
+        capturedAt: '2021-06-10',
+      }),
+    );
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2020-10-10' },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    const fileInput = document.querySelector('input[type="file"]');
+    fireEvent.change(fileInput, {
+      target: {
+        files: createImageFiles([
+          'one.heic',
+          'two.heic',
+          'three.heic',
+          'four.heic',
+          'five.heic',
+        ]),
+      },
+    });
+
+    await screen.findByText('one.heic');
+    expect(document.querySelector('input[type="file"]')).toBeDisabled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Remove one.heic' }));
+    expect(document.querySelector('input[type="file"]')).not.toBeDisabled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(document.querySelector('input[type="file"]')).not.toBeDisabled();
+  });
+
+  it('rejects re-uploading the same photo twice', async () => {
+    extractCaptureDate.mockResolvedValue(
+      createParsedUploadResult({
+        fileName: 'dupe.heic',
+        capturedAt: '2021-06-10',
+      }),
+    );
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2020-10-10' },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    const duplicateFile = createImageFiles(['dupe.heic'])[0];
+    fireEvent.change(document.querySelector('input[type="file"]'), {
+      target: { files: [duplicateFile] },
+    });
+    await screen.findByText('dupe.heic');
+
+    fireEvent.change(document.querySelector('input[type="file"]'), {
+      target: { files: [duplicateFile] },
+    });
+    await screen.findByText('dupe.heic: This photo is already in the queue.');
+
+    const queuedDupeHeadings = screen.getAllByRole('heading', { name: 'dupe.heic' });
+    expect(queuedDupeHeadings).toHaveLength(1);
+  });
+
+  it('keeps green summary visible when red file errors are dismissed', async () => {
+    extractCaptureDate
+      .mockResolvedValueOnce(
+        createParsedUploadResult({
+          fileName: 'valid.heic',
+          capturedAt: '2021-06-10',
+        }),
+      )
+      .mockResolvedValueOnce(
+        createMissingMetadataResult({ fileName: 'invalid.heic' }),
+      );
+
+    render(<App />);
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Casey');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
+      target: { value: '2020-10-10' },
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    fireEvent.change(document.querySelector('input[type="file"]'), {
+      target: { files: createImageFiles(['valid.heic', 'invalid.heic']) },
+    });
+
+    await screen.findByText('1 photo ready for results.');
+    expect(screen.queryByText(/need attention/i)).not.toBeInTheDocument();
+
+    const dismissButtons = screen.getAllByRole('button', { name: 'Dismiss feedback' });
+    expect(dismissButtons).toHaveLength(1);
+    await userEvent.click(dismissButtons[0]);
+
+    expect(screen.queryByText('Some files could not be added.')).not.toBeInTheDocument();
+    expect(screen.getByText('1 photo ready for results.')).toBeInTheDocument();
+  });
+
   it('renders results in chronological order and keeps people in configured order', async () => {
     extractCaptureDate
       .mockResolvedValueOnce(
@@ -180,14 +314,14 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Ada' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Add person' }));
-    const nameFields = screen.getAllByLabelText('Name');
-    const dobFields = screen.getAllByLabelText('Date of birth');
-    await userEvent.type(nameFields[1], 'Lin');
-    fireEvent.change(dobFields[1], {
+    await userEvent.type(screen.getByLabelText('Name'), 'Lin');
+    fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2021-01-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Lin' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
@@ -225,6 +359,7 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.change(document.querySelector('input[type="file"]'), {
@@ -251,6 +386,7 @@ describe('App upload flow', () => {
     fireEvent.change(screen.getByLabelText('Date of birth'), {
       target: { value: '2020-10-10' },
     });
+    await userEvent.click(screen.getByRole('button', { name: 'Done Casey' }));
 
     await userEvent.click(screen.getByRole('button', { name: 'Reset' }));
 

@@ -22,7 +22,9 @@ describe('localStorage people persistence', () => {
     expect(window.localStorage.getItem(STORAGE_KEY)).toBeTruthy();
 
     const loaded = loadPeopleFromStorage();
-    expect(loaded).toEqual(people);
+    expect(loaded).toEqual(
+      people.map((person) => ({ ...person, editing: false, done: true })),
+    );
   });
 
   it('clears persisted people', () => {
@@ -34,6 +36,24 @@ describe('localStorage people persistence', () => {
   it('returns empty list for malformed JSON', () => {
     window.localStorage.setItem(STORAGE_KEY, '{bad json');
     expect(loadPeopleFromStorage()).toEqual([]);
+  });
+
+  it('hydrates legacy stored people as finalized rows', () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify([{ id: '1', name: 'Ada', dateOfBirth: '1990-01-10' }]),
+    );
+
+    const loaded = loadPeopleFromStorage();
+    expect(loaded).toEqual([
+      {
+        id: '1',
+        name: 'Ada',
+        dateOfBirth: '1990-01-10',
+        editing: false,
+        done: true,
+      },
+    ]);
   });
 
   it('restores default person when nothing is stored', () => {

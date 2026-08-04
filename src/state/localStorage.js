@@ -1,4 +1,4 @@
-import { MAX_PEOPLE, normalizePeople } from '../lib/validation/peopleValidation.js';
+import { MAX_PEOPLE, createPerson, normalizePeople } from '../lib/validation/peopleValidation.js';
 
 const STORAGE_KEY = 'how-old.people.v1';
 
@@ -18,7 +18,11 @@ export function loadPeopleFromStorage() {
     }
 
     const parsedValue = JSON.parse(storedValue);
-    return normalizePeople(parsedValue).slice(0, MAX_PEOPLE);
+    return normalizePeople(parsedValue).slice(0, MAX_PEOPLE).map((person) => ({
+      ...person,
+      editing: false,
+      done: true,
+    }));
   } catch (error) {
     return [];
   }
@@ -39,7 +43,9 @@ export function savePeopleToStorage(people) {
   }
 
   try {
-    const normalizedPeople = normalizePeople(people).slice(0, MAX_PEOPLE);
+    const normalizedPeople = normalizePeople(people)
+      .slice(0, MAX_PEOPLE)
+      .map((person) => createPerson({ ...person, editing: false, done: true }));
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedPeople));
   } catch (error) {
     // Ignore storage failures in private browsing or restricted browser modes.

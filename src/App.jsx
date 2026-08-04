@@ -6,6 +6,8 @@ import { extractCaptureDate } from './lib/metadata/extractCaptureDate.js';
 import { createPreviewUrl } from './lib/preview/createPreviewUrl.js';
 import {
   createBlankPerson,
+  editPersonById,
+  finalizePersonById,
   normalizePeople,
   validatePeopleList,
   updatePersonById,
@@ -18,12 +20,15 @@ import {
 } from './state/localStorage.js';
 import {
   applyQueuedUploadResults,
+  canQueueMorePhotos,
   canContinueToResults,
   canContinueToUpload,
   buildTimelineEntries,
   createInitialWorkflowState,
   createLoadingPhotoState,
   createInitialPhotoState,
+  dismissUploadErrors,
+  dismissUploadFeedback,
   FLOW_SCREENS,
   resetPhotoState,
   removeQueuedPhoto,
@@ -80,6 +85,14 @@ export default function App() {
     setPeople((currentPeople) => updatePersonById(currentPeople, id, field, value));
   };
 
+  const handleFinalizePerson = (id) => {
+    setPeople((currentPeople) => finalizePersonById(currentPeople, id));
+  };
+
+  const handleEditPerson = (id) => {
+    setPeople((currentPeople) => editPersonById(currentPeople, id));
+  };
+
   const handleRemovePerson = (id) => {
     setPeople((currentPeople) => {
       const nextPeople = removePersonById(currentPeople, id);
@@ -91,6 +104,11 @@ export default function App() {
     const files = Array.from(event.target.files ?? []);
 
     if (files.length === 0) {
+      return;
+    }
+
+    if (!canQueueMorePhotos(latestPhotoStateRef.current)) {
+      setFileInputKey((currentKey) => currentKey + 1);
       return;
     }
 
@@ -141,6 +159,15 @@ export default function App() {
     setFileInputKey((currentKey) => currentKey + 1);
   };
 
+  const handleDismissUploadErrors = () => {
+    setPhotoState((currentPhotoState) => dismissUploadErrors(currentPhotoState));
+  };
+
+  const handleResetUpload = () => {
+    setPhotoState((currentPhotoState) => resetPhotoState(currentPhotoState));
+    setFileInputKey((currentKey) => currentKey + 1);
+  };
+
   const handleContinueToUpload = () => {
     if (!canContinueToUpload(validation)) {
       return;
@@ -155,6 +182,7 @@ export default function App() {
 
   const handleReturnToUpload = () => {
     setCurrentScreen(FLOW_SCREENS.UPLOAD);
+    setPhotoState((currentPhotoState) => dismissUploadFeedback(currentPhotoState));
   };
 
   const handleContinueToResults = () => {
@@ -195,6 +223,8 @@ export default function App() {
             onAddPerson={handleAddPerson}
             onUpdatePerson={handleUpdatePerson}
             onRemovePerson={handleRemovePerson}
+            onFinalizePerson={handleFinalizePerson}
+            onEditPerson={handleEditPerson}
             onContinue={handleContinueToUpload}
             onReset={handleResetPeople}
           />
@@ -209,6 +239,8 @@ export default function App() {
             onBack={handleBackToPeople}
             onContinue={handleContinueToResults}
             onRemovePhoto={handleRemovePhoto}
+            onDismissErrors={handleDismissUploadErrors}
+            onResetUpload={handleResetUpload}
           />
         ) : null}
 

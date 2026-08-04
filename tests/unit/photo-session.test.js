@@ -118,11 +118,65 @@ describe('photo session queue helpers', () => {
     expect(result.photoState.photos.map((photo) => photo.fileName)).toEqual(['newer.heic']);
   });
 
+  it('rejects duplicate photos by file fingerprint while keeping the original queued item', () => {
+    const currentState = {
+      ...createInitialPhotoState(),
+      photos: [
+        {
+          id: 'queued-1',
+          fileName: 'duplicate.heic',
+          mimeType: 'image/heic',
+          capturedAt: '2020-01-01',
+          sourceTag: 'DateTimeOriginal',
+          previewUrl: 'blob:duplicate-1',
+          fileFingerprint: 'duplicate.heic::image/heic::12345::1700000000000',
+          status: 'parsed',
+          addedOrder: 0,
+        },
+      ],
+      nextAddedOrder: 1,
+    };
+
+    const nextState = applyQueuedUploadResults(currentState, [
+      {
+        fileName: 'duplicate.heic',
+        mimeType: 'image/heic',
+        capturedAt: '2020-03-01',
+        sourceTag: 'DateTimeOriginal',
+        fileSize: 12345,
+        lastModified: 1700000000000,
+        status: 'parsed',
+        previewUrl: 'blob:duplicate-2',
+      },
+    ]);
+
+    expect(nextState.photos).toHaveLength(1);
+    expect(nextState.photos[0].fileName).toBe('duplicate.heic');
+    expect(nextState.fileErrors).toEqual([
+      {
+        fileName: 'duplicate.heic',
+        message: 'This photo is already in the queue.',
+      },
+    ]);
+  });
+
   it('builds oldest-to-newest timeline entries and preserves configured people order', () => {
     const timelineEntries = buildTimelineEntries(
       [
-        { id: 'person-1', name: 'Ada', dateOfBirth: '1990-01-10' },
-        { id: 'person-2', name: 'Lin', dateOfBirth: '1995-03-02' },
+        {
+          id: 'person-1',
+          name: 'Ada',
+          dateOfBirth: '1990-01-10',
+          editing: false,
+          done: true,
+        },
+        {
+          id: 'person-2',
+          name: 'Lin',
+          dateOfBirth: '1995-03-02',
+          editing: false,
+          done: true,
+        },
       ],
       {
         ...createInitialPhotoState(),

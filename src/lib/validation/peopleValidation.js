@@ -14,14 +14,21 @@ export function createBlankPerson() {
     id: createId(),
     name: '',
     dateOfBirth: '',
+    editing: true,
+    done: false,
   };
 }
 
 export function createPerson(values = {}) {
+  const isEditing = values.editing === true;
+  const isDone = values.done === true;
+
   return {
     id: values.id ?? createId(),
     name: typeof values.name === 'string' ? values.name : '',
     dateOfBirth: typeof values.dateOfBirth === 'string' ? values.dateOfBirth : '',
+    editing: isEditing || (!isDone && values.editing !== false),
+    done: isDone || values.done === true,
   };
 }
 
@@ -31,6 +38,21 @@ export function normalizePeople(people) {
   }
 
   return people.slice(0, MAX_PEOPLE).map((person) => createPerson(person));
+}
+
+export function createReadinessSummary(people) {
+  const normalizedPeople = normalizePeople(people);
+  const hasPendingRows = normalizedPeople.some((person) => !person.done);
+
+  if (normalizedPeople.length === 0) {
+    return 'Add at least one person before uploading a photo.';
+  }
+
+  if (hasPendingRows) {
+    return 'Finish every person entry before uploading a photo.';
+  }
+
+  return '';
 }
 
 export function isValidIsoDate(value) {
@@ -92,7 +114,7 @@ export function validatePeopleList(people) {
     summary = 'Add at least one person before uploading a photo.';
   } else if (normalizedPeople.length > MAX_PEOPLE) {
     summary = 'You can enter up to five people.';
-  } else if (Object.keys(issuesById).length > 0) {
+  } else if (Object.keys(issuesById).length > 0 || normalizedPeople.some((person) => !person.done)) {
     summary = 'Finish every person entry before uploading a photo.';
   }
 
@@ -104,7 +126,8 @@ export function validatePeopleList(people) {
     isValid:
       normalizedPeople.length >= MIN_PEOPLE &&
       normalizedPeople.length <= MAX_PEOPLE &&
-      Object.keys(issuesById).length === 0,
+      Object.keys(issuesById).length === 0 &&
+      normalizedPeople.every((person) => person.done),
   };
 }
 
@@ -121,6 +144,36 @@ export function updatePersonById(people, id, field, value) {
     return {
       ...person,
       [field]: value,
+      editing: field === 'done' ? false : person.editing,
+      done: field === 'done' ? Boolean(value) : person.done,
+    };
+  });
+}
+
+export function finalizePersonById(people, id) {
+  return normalizePeople(people).map((person) => {
+    if (person.id !== id) {
+      return person;
+    }
+
+    return {
+      ...person,
+      editing: false,
+      done: true,
+    };
+  });
+}
+
+export function editPersonById(people, id) {
+  return normalizePeople(people).map((person) => {
+    if (person.id !== id) {
+      return person;
+    }
+
+    return {
+      ...person,
+      editing: true,
+      done: false,
     };
   });
 }
