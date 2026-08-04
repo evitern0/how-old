@@ -68,6 +68,7 @@ describe('App upload flow', () => {
     await screen.findByRole('heading', { name: 'Results' });
     expect(screen.getByText('newer.heic')).toBeInTheDocument();
     expect(screen.getByText('1 year, 8 months')).toBeInTheDocument();
+    expect(screen.getByText('👶 20 months')).toBeInTheDocument();
   });
 
   it('keeps valid photos from a mixed batch and reports invalid files by name', async () => {

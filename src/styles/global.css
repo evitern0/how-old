@@ -456,9 +456,23 @@ button:disabled {
   margin-bottom: 8px;
 }
 
+.result-item__age-block {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
 .result-item__age {
   color: var(--accent);
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.result-item__age-aux {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -643,5 +657,9 @@ button:disabled {
 
   .result-item__age {
     font-size: 0.9rem;
+  }
+
+  .result-item__age-aux {
+    font-size: 0.78rem;
   }
 }

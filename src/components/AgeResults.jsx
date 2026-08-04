@@ -1,4 +1,14 @@
 export default function AgeResults({ results }) {
+  const formatUnderTwoMonths = (ageParts) => {
+    if (!ageParts || ageParts.years >= 2) {
+      return '';
+    }
+
+    const totalMonths = (ageParts.years * 12) + ageParts.months;
+    const monthLabel = totalMonths === 1 ? 'month' : 'months';
+    return `👶 ${totalMonths} ${monthLabel}`;
+  };
+
   return (
     <section className="card">
       <h2>Results</h2>
@@ -29,14 +39,21 @@ export default function AgeResults({ results }) {
                 <p className="muted">Metadata field {entry.sourceTag}</p>
 
                 <ul className="results-list results-list--timeline">
-                  {entry.ageResults.map((result) => (
-                    <li className="result-item" key={`${entry.photoId}:${result.personId}`}>
-                      <div className="result-item__head">
-                        <strong>{result.name}</strong>
-                        <span className="result-item__age">{result.ageLabel}</span>
-                      </div>
-                    </li>
-                  ))}
+                  {entry.ageResults.map((result) => {
+                    const underTwoAge = formatUnderTwoMonths(result.ageParts);
+
+                    return (
+                      <li className="result-item" key={`${entry.photoId}:${result.personId}`}>
+                        <div className="result-item__head">
+                          <strong>{result.name}</strong>
+                          <div className="result-item__age-block">
+                            <span className="result-item__age">{result.ageLabel}</span>
+                            {underTwoAge ? <span className="result-item__age-aux">{underTwoAge}</span> : null}
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </article>
